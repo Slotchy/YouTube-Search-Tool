@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Search Tool</title>
     <style>
+        :root {
+            --accent:       #8b5cf6;
+            --accent-light: #a78bfa;
+            --accent-dark:  #6d28d9;
+            --accent-bg:    #2e1f5e;
+            --accent-bg2:   #1a0f35;
+            --accent-dim:   #4c3a7a;
+            --accent-tint:  #c4b5fd;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -37,26 +47,85 @@
             to   { transform: translateX(100vw); }
         }
 
-        .container {
-            max-width: 1200px;
+        .page-wrapper {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            max-width: 1260px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
         }
 
+        .container { flex: 1; min-width: 0; }
+
+        /* ── Color Theme Panel ── */
+        .theme-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 10px 8px;
+            background: #111118;
+            border: 1px solid #2a2a3a;
+            border-radius: 10px;
+            position: sticky;
+            top: 20px;
+            flex-shrink: 0;
+        }
+
+        .theme-panel-label {
+            font-size: 9px;
+            color: #444;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .swatch {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .swatch:hover { transform: scale(1.18); }
+
+        .swatch.active {
+            border-color: #fff;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.25);
+        }
+
+        .swatch.active::after {
+            content: '✓';
+            font-size: 13px;
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            line-height: 1;
+        }
+
         h1 {
             text-align: center;
-            color: #8b5cf6;
+            color: var(--accent);
             margin-bottom: 40px;
             font-size: 2.5em;
+            transition: color 0.3s;
         }
 
         .input-section {
             background: #1e1e28;
             padding: 30px;
             border-radius: 8px;
-            border: 2px solid #8b5cf6;
+            border: 2px solid var(--accent);
             margin-bottom: 30px;
+            transition: border-color 0.3s;
         }
 
         .input-group { margin-bottom: 20px; }
@@ -72,7 +141,7 @@
             width: 100%;
             padding: 12px 16px;
             background: #1e1e28;
-            border: 2px solid #8b5cf6;
+            border: 2px solid var(--accent);
             border-radius: 4px;
             color: #e5e5e5;
             font-family: 'Consolas', monospace;
@@ -82,7 +151,7 @@
 
         input[type="text"]:focus, input[type="password"]:focus {
             outline: none;
-            border-color: #a78bfa;
+            border-color: var(--accent-light);
         }
 
         input::placeholder { color: #a1a1aa; }
@@ -97,7 +166,7 @@
         .mode-btn {
             padding: 10px 30px;
             background: #1e1e28;
-            border: 2px solid #8b5cf6;
+            border: 2px solid var(--accent);
             border-radius: 4px;
             color: #e5e5e5;
             cursor: pointer;
@@ -109,8 +178,8 @@
         .mode-btn:hover:not(:disabled) { background: #272733; }
 
         .mode-btn.active {
-            background: #8b5cf6;
-            border-color: #8b5cf6;
+            background: var(--accent);
+            border-color: var(--accent);
         }
 
         .mode-btn:disabled {
@@ -151,9 +220,9 @@
             cursor: pointer;
             inset: 0;
             background: #2e2e3e;
-            border: 2px solid #8b5cf6;
+            border: 2px solid var(--accent);
             border-radius: 24px;
-            transition: background 0.3s;
+            transition: background 0.3s, border-color 0.3s;
         }
 
         .toggle-slider::before {
@@ -164,12 +233,12 @@
             left: 3px;
             top: 50%;
             transform: translateY(-50%);
-            background: #8b5cf6;
+            background: var(--accent);
             border-radius: 50%;
-            transition: transform 0.3s;
+            transition: transform 0.3s, background 0.3s;
         }
 
-        .toggle-switch input:checked + .toggle-slider { background: #8b5cf6; }
+        .toggle-switch input:checked + .toggle-slider { background: var(--accent); }
 
         .toggle-switch input:checked + .toggle-slider::before {
             transform: translateX(20px) translateY(-50%);
@@ -192,23 +261,21 @@
 
         .date-mode-notice {
             font-size: 12px;
-            color: #a78bfa;
-            background: #1a0f35;
-            border: 1px solid #4c3a7a;
+            color: var(--accent-light);
+            background: var(--accent-bg2);
+            border: 1px solid var(--accent-dim);
             border-radius: 4px;
             padding: 8px 12px;
+            transition: color 0.3s, background 0.3s, border-color 0.3s;
         }
 
-        .date-mode-tabs {
-            display: flex;
-            gap: 8px;
-        }
+        .date-mode-tabs { display: flex; gap: 8px; }
 
         .date-tab {
             flex: 1;
             padding: 9px;
             background: #1e1e28;
-            border: 2px solid #8b5cf6;
+            border: 2px solid var(--accent);
             border-radius: 4px;
             color: #a1a1aa;
             font-family: 'Consolas', monospace;
@@ -221,8 +288,8 @@
         .date-tab:hover { background: #272733; color: #e5e5e5; }
 
         .date-tab.active {
-            background: #8b5cf6;
-            border-color: #8b5cf6;
+            background: var(--accent);
+            border-color: var(--accent);
             color: #fff;
         }
 
@@ -233,7 +300,7 @@
             min-height: 16px;
         }
 
-        .range-hint.picking-end { color: #a78bfa; }
+        .range-hint.picking-end { color: var(--accent-light); }
 
         .cal-year-toggle {
             margin-bottom: 12px;
@@ -243,26 +310,25 @@
             justify-content: center;
         }
 
-        .cal-year-toggle label {
-            color: #8b5cf6;
-            font-size: 14px;
-        }
+        .cal-year-toggle label { color: var(--accent); font-size: 14px; }
 
         #yearSelect {
             background: #1e1e28;
-            border: 2px solid #8b5cf6;
+            border: 2px solid var(--accent);
             color: #e5e5e5;
             padding: 6px 10px;
             border-radius: 4px;
             font-family: 'Consolas', monospace;
+            transition: border-color 0.3s;
         }
 
         .calendar-wrapper {
             background: #13131c;
-            border: 2px solid #8b5cf6;
+            border: 2px solid var(--accent);
             border-radius: 8px;
             padding: 18px;
             user-select: none;
+            transition: border-color 0.3s;
         }
 
         .cal-nav {
@@ -274,21 +340,21 @@
 
         .cal-nav-btn {
             background: none;
-            border: 2px solid #8b5cf6;
+            border: 2px solid var(--accent);
             border-radius: 4px;
-            color: #8b5cf6;
+            color: var(--accent);
             font-family: 'Consolas', monospace;
             font-size: 16px;
             width: 32px;
             height: 32px;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.2s, color 0.2s, border-color 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .cal-nav-btn:hover { background: #8b5cf6; color: #fff; }
+        .cal-nav-btn:hover { background: var(--accent); color: #fff; }
 
         .cal-month-year {
             color: #e5e5e5;
@@ -305,10 +371,11 @@
 
         .cal-day-name {
             text-align: center;
-            color: #8b5cf6;
+            color: var(--accent);
             font-size: 11px;
             padding: 4px 0 8px;
             letter-spacing: 1px;
+            transition: color 0.3s;
         }
 
         .cal-cell {
@@ -324,39 +391,35 @@
 
         .cal-cell:hover:not(.empty):not(.future):not(.selected):not(.range-start):not(.range-end) {
             background: #272733;
-            border-color: #8b5cf6;
+            border-color: var(--accent);
         }
 
         .cal-cell.empty  { cursor: default; }
-
-        .cal-cell.future {
-            color: #3a3a4a;
-            cursor: not-allowed;
-        }
+        .cal-cell.future { color: #3a3a4a; cursor: not-allowed; }
 
         .cal-cell.today {
-            border-color: #8b5cf6;
-            color: #a78bfa;
+            border-color: var(--accent);
+            color: var(--accent-light);
         }
 
         .cal-cell.selected {
-            background: #8b5cf6;
+            background: var(--accent);
             color: #fff;
-            border-color: #8b5cf6;
+            border-color: var(--accent);
             font-weight: bold;
         }
 
         .cal-cell.range-start,
         .cal-cell.range-end {
-            background: #8b5cf6;
+            background: var(--accent);
             color: #fff;
-            border-color: #8b5cf6;
+            border-color: var(--accent);
             font-weight: bold;
         }
 
         .cal-cell.in-range {
-            background: #2e1f5e;
-            color: #c4b5fd;
+            background: var(--accent-bg);
+            color: var(--accent-tint);
             border-radius: 0;
         }
 
@@ -370,8 +433,9 @@
             border-radius: 4px;
             padding: 10px 14px;
             font-size: 13px;
-            color: #a78bfa;
+            color: var(--accent-light);
             min-height: 36px;
+            transition: color 0.3s;
         }
 
         #hourFilterSection {
@@ -391,12 +455,13 @@
 
         #hourFilterSection input[type="time"] {
             background: #1e1e28;
-            border: 2px solid #8b5cf6;
+            border: 2px solid var(--accent);
             color: #e5e5e5;
             padding: 8px 12px;
             border-radius: 4px;
             font-family: 'Consolas', monospace;
             width: 110px;
+            transition: border-color 0.3s;
         }
 
         .clear-dates-btn {
@@ -412,77 +477,7 @@
             align-self: flex-start;
         }
 
-        .clear-dates-btn:hover {
-            border-color: #8b5cf6;
-            color: #e5e5e5;
-        }
-
-        .search-btn {
-            width: 100%;
-            padding: 16px;
-            background: #8b5cf6;
-            border: none;
-            border-radius: 6px;
-            color: #e5e5e5;
-            font-family: 'Consolas', monospace;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-weight: bold;
-        }
-
-        .search-btn:hover    { background: #a78bfa; }
-        .search-btn:disabled { background: #4c4c5c; cursor: not-allowed; }
-
-        .status {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 14px;
-            min-height: 20px;
-        }
-
-        .status.error   { color: #ef4444; }
-        .status.success { color: #8b5cf6; }
-        .status.info    { color: #a1a1aa; }
-
-        .results { margin-top: 40px; }
-
-        .result-card {
-            background: #1e1e28;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 6px;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .result-card:hover {
-            border-color: #272733;
-            transform: translateY(-2px);
-        }
-
-        .result-title {
-            color: #e5e5e5;
-            font-size: 16px;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-
-        .result-time {
-            color: #a1a1aa;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .result-link {
-            color: #8b5cf6;
-            font-size: 14px;
-            text-decoration: none;
-            word-break: break-all;
-        }
-
-        .result-link:hover { text-decoration: underline; }
+        .clear-dates-btn:hover { border-color: var(--accent); color: #e5e5e5; }
 
         .filter-shorts-row {
             display: flex;
@@ -498,25 +493,23 @@
             user-select: none;
         }
 
-        .filter-shorts-row:hover { border-color: #8b5cf6; }
+        .filter-shorts-row:hover { border-color: var(--accent); }
 
         .filter-shorts-row input[type="checkbox"] {
             appearance: none;
             -webkit-appearance: none;
             width: 18px;
             height: 18px;
-            border: 2px solid #8b5cf6;
+            border: 2px solid var(--accent);
             border-radius: 4px;
             background: #1e1e28;
             cursor: pointer;
             flex-shrink: 0;
             position: relative;
-            transition: background 0.2s;
+            transition: background 0.2s, border-color 0.3s;
         }
 
-        .filter-shorts-row input[type="checkbox"]:checked {
-            background: #8b5cf6;
-        }
+        .filter-shorts-row input[type="checkbox"]:checked { background: var(--accent); }
 
         .filter-shorts-row input[type="checkbox"]:checked::after {
             content: '✓';
@@ -530,38 +523,82 @@
             line-height: 1;
         }
 
-        .filter-shorts-label {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
+        .filter-shorts-label { display: flex; flex-direction: column; gap: 2px; }
+        .filter-shorts-label span:first-child { color: #e5e5e5; font-size: 14px; }
+        .filter-shorts-label span:last-child  { color: #555; font-size: 11px; }
 
-        .filter-shorts-label span:first-child {
+        .search-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            border: none;
+            border-radius: 6px;
             color: #e5e5e5;
-            font-size: 14px;
+            font-family: 'Consolas', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: bold;
         }
 
-        .filter-shorts-label span:last-child {
-            color: #555;
-            font-size: 11px;
+        .search-btn:hover    { background: var(--accent-light); }
+        .search-btn:disabled { background: #4c4c5c; cursor: not-allowed; }
+
+        .status {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 14px;
+            min-height: 20px;
         }
+
+        .status.error   { color: #ef4444; }
+        .status.success { color: var(--accent); transition: color 0.3s; }
+        .status.info    { color: #a1a1aa; }
+
+        .results { margin-top: 40px; }
+
+        .result-card {
+            background: #1e1e28;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .result-card:hover { border-color: #272733; transform: translateY(-2px); }
+
+        .result-title { color: #e5e5e5; font-size: 16px; margin-bottom: 10px; line-height: 1.4; }
+        .result-time  { color: #a1a1aa; font-size: 14px; margin-bottom: 8px; }
+
+        .result-link {
+            color: var(--accent);
+            font-size: 14px;
+            text-decoration: none;
+            word-break: break-all;
+            transition: color 0.3s;
+        }
+
+        .result-link:hover { text-decoration: underline; }
 
         .api-key-toggle {
             display: inline-block;
             margin-left: 10px;
-            color: #8b5cf6;
+            color: var(--accent);
             cursor: pointer;
             font-size: 12px;
             text-decoration: underline;
+            transition: color 0.3s;
         }
 
-        .api-key-toggle:hover { color: #a78bfa; }
+        .api-key-toggle:hover { color: var(--accent-light); }
 
         .api-help-btn {
             display: inline-block;
             margin-top: 10px;
             padding: 9px 18px;
-            background: #8b5cf6;
+            background: var(--accent);
             border: none;
             border-radius: 4px;
             color: #fff;
@@ -570,118 +607,173 @@
             font-weight: bold;
             cursor: pointer;
             text-decoration: none;
-            transition: background 0.2s;
+            transition: background 0.3s;
         }
 
-        .api-help-btn:hover { background: #a78bfa; }
+        .api-help-btn:hover { background: var(--accent-light); }
 
         @media (max-width: 768px) {
             h1 { font-size: 1.8em; }
             .mode-buttons { flex-direction: column; }
             .mode-btn { width: 100%; }
+            .page-wrapper { flex-direction: column-reverse; gap: 12px; }
+            .theme-panel { flex-direction: row; flex-wrap: wrap; position: static; width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
     <div class="particles" id="particles"></div>
 
-    <div class="container">
-        <h1>YouTube Search Tool</h1>
+    <div class="page-wrapper">
 
-        <div class="input-section">
+        <div class="container">
+            <h1>YouTube Search Tool</h1>
 
-            <div class="input-group">
-                <label for="apiKey">
-                    YouTube API Key
-                    <span class="api-key-toggle" onclick="toggleApiKeyVisibility()">show/hide</span>
-                </label>
-                <input type="password" id="apiKey" placeholder="Paste your YouTube API key here">
-                <a class="api-help-btn" href="https://youtu.be/z4gm4YPE_B0?t=138" target="_blank">&#9654; How To Get API Key</a>
-            </div>
+            <div class="input-section">
 
-            <div class="input-group">
-                <label for="searchQuery">Search Topic</label>
-                <input type="text" id="searchQuery" placeholder="Enter search topic" maxlength="44">
-            </div>
-
-            <div class="mode-buttons">
-                <button class="mode-btn active" id="videosBtn"      onclick="setMode('videos')">Videos</button>
-                <button class="mode-btn"         id="livestreamsBtn" onclick="setMode('livestreams')">Livestreams</button>
-            </div>
-
-            <div class="date-filter-section">
-                <div class="date-filter-header">
-                    <label>Filter by Date</label>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="dateFilterToggle" onchange="toggleDateFilter()">
-                        <span class="toggle-slider"></span>
+                <div class="input-group">
+                    <label for="apiKey">
+                        YouTube API Key
+                        <span class="api-key-toggle" onclick="toggleApiKeyVisibility()">show/hide</span>
                     </label>
-                    <span id="dateFilterLabel" style="font-size:12px;color:#555;">Off</span>
+                    <input type="password" id="apiKey" placeholder="Paste your YouTube API key here">
+                    <a class="api-help-btn" href="https://youtu.be/z4gm4YPE_B0?t=138" target="_blank">&#9654; How To Get API Key</a>
                 </div>
 
-                <div class="date-filter-body" id="dateFilterBody">
-
-                    <div class="date-mode-notice">
-                        📅 Date filtering searches videos only — livestreams are not available with this option.
-                    </div>
-
-                    <div class="date-mode-tabs">
-                        <div class="date-tab active" id="tabSingle" onclick="setDateMode('single')">Single Day</div>
-                        <div class="date-tab"         id="tabRange"  onclick="setDateMode('range')">Date Range</div>
-                    </div>
-
-                    <div class="range-hint" id="rangeHint"></div>
-
-                    <div class="calendar-wrapper">
-                        <div class="cal-year-toggle">
-                            <label>Year:</label>
-                            <select id="yearSelect" onchange="changeYear(this.value)"></select>
-                        </div>
-                        <div class="cal-nav">
-                            <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
-                            <div class="cal-month-year" id="calMonthYear"></div>
-                            <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
-                        </div>
-                        <div class="cal-grid" id="calGrid"></div>
-                    </div>
-
-                    <div class="selected-dates-display" id="selectedDatesDisplay">No date selected</div>
-
-                    <div id="hourFilterSection" style="display: none;">
-                        <label>Hour Filter (your local timezone — auto-converted to UTC)</label>
-                        <div style="display:flex;gap:30px;">
-                            <div>
-                                <span style="font-size:12px;color:#a78bfa;">Start</span><br>
-                                <input type="time" id="startHour" value="00:00">
-                            </div>
-                            <div>
-                                <span style="font-size:12px;color:#a78bfa;">End</span><br>
-                                <input type="time" id="endHour" value="23:59">
-                            </div>
-                        </div>
-                    </div>
-
-                    <button class="clear-dates-btn" onclick="clearDates()">✕ Clear</button>
-
+                <div class="input-group">
+                    <label for="searchQuery">Search Topic</label>
+                    <input type="text" id="searchQuery" placeholder="Enter search topic" maxlength="44">
                 </div>
+
+                <div class="mode-buttons">
+                    <button class="mode-btn active" id="videosBtn"      onclick="setMode('videos')">Videos</button>
+                    <button class="mode-btn"         id="livestreamsBtn" onclick="setMode('livestreams')">Livestreams</button>
+                </div>
+
+                <div class="date-filter-section">
+                    <div class="date-filter-header">
+                        <label>Filter by Date</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="dateFilterToggle" onchange="toggleDateFilter()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span id="dateFilterLabel" style="font-size:12px;color:#555;">Off</span>
+                    </div>
+
+                    <div class="date-filter-body" id="dateFilterBody">
+
+                        <div class="date-mode-notice">
+                            📅 Date filtering searches videos only — livestreams are not available with this option.
+                        </div>
+
+                        <div class="date-mode-tabs">
+                            <div class="date-tab active" id="tabSingle" onclick="setDateMode('single')">Single Day</div>
+                            <div class="date-tab"         id="tabRange"  onclick="setDateMode('range')">Date Range</div>
+                        </div>
+
+                        <div class="range-hint" id="rangeHint"></div>
+
+                        <div class="calendar-wrapper">
+                            <div class="cal-year-toggle">
+                                <label>Year:</label>
+                                <select id="yearSelect" onchange="changeYear(this.value)"></select>
+                            </div>
+                            <div class="cal-nav">
+                                <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+                                <div class="cal-month-year" id="calMonthYear"></div>
+                                <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+                            </div>
+                            <div class="cal-grid" id="calGrid"></div>
+                        </div>
+
+                        <div class="selected-dates-display" id="selectedDatesDisplay">No date selected</div>
+
+                        <div id="hourFilterSection" style="display: none;">
+                            <label>Hour Filter (your local timezone — auto-converted to UTC)</label>
+                            <div style="display:flex;gap:30px;">
+                                <div>
+                                    <span style="font-size:12px;color:var(--accent-light);">Start</span><br>
+                                    <input type="time" id="startHour" value="00:00">
+                                </div>
+                                <div>
+                                    <span style="font-size:12px;color:var(--accent-light);">End</span><br>
+                                    <input type="time" id="endHour" value="23:59">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="clear-dates-btn" onclick="clearDates()">✕ Clear</button>
+
+                    </div>
+                </div>
+
+                <label class="filter-shorts-row" for="filterShorts">
+                    <input type="checkbox" id="filterShorts">
+                    <div class="filter-shorts-label">
+                        <span>Filter Out Shorts</span>
+                        <span>Hides videos 60 seconds or under — fetches extra details per result</span>
+                    </div>
+                </label>
+
+                <button class="search-btn" id="searchBtn" onclick="searchYouTube()">Find Most Recent</button>
             </div>
 
-            <label class="filter-shorts-row" for="filterShorts">
-                <input type="checkbox" id="filterShorts">
-                <div class="filter-shorts-label">
-                    <span>Filter Out Shorts</span>
-                    <span>Hides videos 60 seconds or under — fetches extra details per result</span>
-                </div>
-            </label>
-
-            <button class="search-btn" id="searchBtn" onclick="searchYouTube()">Find Most Recent</button>
+            <div class="status"  id="status"></div>
+            <div class="results" id="results"></div>
         </div>
 
-        <div class="status"  id="status"></div>
-        <div class="results" id="results"></div>
+        <!-- Color Theme Panel -->
+        <div class="theme-panel" id="themePanel">
+            <div class="theme-panel-label">Theme</div>
+        </div>
+
     </div>
 
     <script>
+        // ── Theme definitions ──────────────────────────────────────────────
+        const THEMES = [
+            { name: 'Purple',   accent: '#8b5cf6', light: '#a78bfa', dark: '#6d28d9', bg: '#2e1f5e', bg2: '#1a0f35', dim: '#4c3a7a', tint: '#c4b5fd' },
+            { name: 'Cyan',     accent: '#06b6d4', light: '#67e8f9', dark: '#0891b2', bg: '#0e3344', bg2: '#051c26', dim: '#1a5568', tint: '#a5f3fc' },
+            { name: 'Emerald',  accent: '#10b981', light: '#6ee7b7', dark: '#059669', bg: '#0b3b2e', bg2: '#051f18', dim: '#1a5c46', tint: '#a7f3d0' },
+            { name: 'Rose',     accent: '#f43f5e', light: '#fb7185', dark: '#e11d48', bg: '#4a1122', bg2: '#2d0a15', dim: '#7c1d35', tint: '#fda4af' },
+            { name: 'Amber',    accent: '#f59e0b', light: '#fcd34d', dark: '#d97706', bg: '#442d08', bg2: '#2a1c04', dim: '#78510f', tint: '#fde68a' },
+            { name: 'Blue',     accent: '#3b82f6', light: '#93c5fd', dark: '#1d4ed8', bg: '#1e3a5f', bg2: '#0f2040', dim: '#2c4f82', tint: '#bfdbfe' },
+            { name: 'Pink',     accent: '#ec4899', light: '#f9a8d4', dark: '#be185d', bg: '#4a1033', bg2: '#2d0920', dim: '#7c1a52', tint: '#fbcfe8' },
+            { name: 'Lime',     accent: '#84cc16', light: '#bef264', dark: '#65a30d', bg: '#2a3a09', bg2: '#182205', dim: '#3f5a10', tint: '#d9f99d' },
+        ];
+
+        let activeThemeIndex = 0;
+
+        function applyTheme(index) {
+            const t = THEMES[index];
+            const r = document.documentElement.style;
+            r.setProperty('--accent',       t.accent);
+            r.setProperty('--accent-light', t.light);
+            r.setProperty('--accent-dark',  t.dark);
+            r.setProperty('--accent-bg',    t.bg);
+            r.setProperty('--accent-bg2',   t.bg2);
+            r.setProperty('--accent-dim',   t.dim);
+            r.setProperty('--accent-tint',  t.tint);
+            activeThemeIndex = index;
+            localStorage.setItem('youtube_theme', index);
+            document.querySelectorAll('.swatch').forEach((s, i) => {
+                s.classList.toggle('active', i === index);
+            });
+        }
+
+        function buildThemePanel() {
+            const panel = document.getElementById('themePanel');
+            THEMES.forEach((t, i) => {
+                const sw = document.createElement('div');
+                sw.className   = 'swatch' + (i === 0 ? ' active' : '');
+                sw.style.background = t.accent;
+                sw.title       = t.name;
+                sw.addEventListener('click', () => applyTheme(i));
+                panel.appendChild(sw);
+            });
+        }
+
+        // ── App state ──────────────────────────────────────────────────────
         let currentMode  = 'videos';
         let showApiKey   = false;
         let dateEnabled  = false;
@@ -707,7 +799,7 @@
                 p.style.top               = Math.random() * 100 + '%';
                 p.style.left              = Math.random() * -20 + '%';
                 p.style.animationDuration = (Math.random() * 20 + 10) + 's';
-                p.style.animationDelay    = Math.random() * 5 + 's';
+                p.style.animationDelay    = -(Math.random() * 30) + 's';
                 container.appendChild(p);
             }
         }
@@ -719,7 +811,7 @@
             for (let y = 2005; y <= currentYear; y++) {
                 const opt = document.createElement('option');
                 opt.value = y;
-                opt.text = y;
+                opt.text  = y;
                 if (y === calYear) opt.selected = true;
                 select.appendChild(opt);
             }
@@ -728,6 +820,9 @@
         window.addEventListener('DOMContentLoaded', () => {
             const saved = localStorage.getItem('youtube_api_key');
             if (saved) document.getElementById('apiKey').value = saved;
+            buildThemePanel();
+            const savedTheme = localStorage.getItem('youtube_theme');
+            if (savedTheme !== null) applyTheme(parseInt(savedTheme));
             createParticles();
             populateYearSelect();
             renderCalendar();
@@ -756,7 +851,7 @@
 
             body.classList.toggle('visible', dateEnabled);
             lbl.textContent = dateEnabled ? 'On' : 'Off';
-            lbl.style.color = dateEnabled ? '#8b5cf6' : '#555';
+            lbl.style.color = dateEnabled ? 'var(--accent)' : '#555';
 
             if (dateEnabled) {
                 setMode('videos');
@@ -883,16 +978,8 @@
 
         function changeMonth(delta) {
             calMonth += delta;
-            if (calMonth < 0) {
-                calMonth = 11;
-                calYear--;
-                document.getElementById('yearSelect').value = calYear;
-            }
-            if (calMonth > 11) {
-                calMonth = 0;
-                calYear++;
-                document.getElementById('yearSelect').value = calYear;
-            }
+            if (calMonth < 0)  { calMonth = 11; calYear--; document.getElementById('yearSelect').value = calYear; }
+            if (calMonth > 11) { calMonth = 0;  calYear++; document.getElementById('yearSelect').value = calYear; }
             renderCalendar();
         }
 
@@ -944,8 +1031,8 @@
         }
 
         function updateHourFilterVisibility() {
-            const sec = document.getElementById('hourFilterSection');
-            let show = dateEnabled;
+            const sec  = document.getElementById('hourFilterSection');
+            let show   = dateEnabled;
             if (dateMode === 'single') {
                 show = show && selectedDate !== null;
             } else {
@@ -981,13 +1068,11 @@
         }
 
         function parseDuration(iso) {
-            // Parses ISO 8601 duration e.g. PT1M30S → seconds
             const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
             if (!match) return 0;
-            const h = parseInt(match[1] || 0);
-            const m = parseInt(match[2] || 0);
-            const s = parseInt(match[3] || 0);
-            return h * 3600 + m * 60 + s;
+            return parseInt(match[1] || 0) * 3600
+                 + parseInt(match[2] || 0) * 60
+                 + parseInt(match[3] || 0);
         }
 
         async function searchYouTube() {
@@ -1032,17 +1117,14 @@
 
                     const startTimeStr = document.getElementById('startHour').value || '00:00';
                     const endTimeStr   = document.getElementById('endHour').value   || '23:59';
-                    const [shh, smm] = startTimeStr.split(':').map(Number);
-                    const [ehh, emm] = endTimeStr.split(':').map(Number);
+                    const [shh, smm]   = startTimeStr.split(':').map(Number);
+                    const [ehh, emm]   = endTimeStr.split(':').map(Number);
 
                     const startLocal = new Date(startBase.getFullYear(), startBase.getMonth(), startBase.getDate(), shh, smm, 0);
                     const endLocal   = new Date(endBase.getFullYear(),   endBase.getMonth(),   endBase.getDate(),   ehh, emm, 59);
 
-                    const after = startLocal.toISOString();
-                    const before = endLocal.toISOString();
-
-                    url += `&publishedAfter=${encodeURIComponent(after)}`;
-                    url += `&publishedBefore=${encodeURIComponent(before)}`;
+                    url += `&publishedAfter=${encodeURIComponent(startLocal.toISOString())}`;
+                    url += `&publishedBefore=${encodeURIComponent(endLocal.toISOString())}`;
                 }
 
                 const response = await fetch(url);
@@ -1068,8 +1150,8 @@
                 const filterShorts = document.getElementById('filterShorts').checked;
                 if (filterShorts) {
                     setStatus('Checking video durations...', 'info');
-                    const videoIds = items.map(i => i.id.videoId).join(',');
-                    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${apiKey}`;
+                    const videoIds    = items.map(i => i.id.videoId).join(',');
+                    const detailsUrl  = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${apiKey}`;
                     const detailsRes  = await fetch(detailsUrl);
                     const detailsData = await detailsRes.json();
 

@@ -1,10 +1,8 @@
 # 📺 YouTube Search Tool
 
 A web-based tool to search YouTube videos and livestreams in **true chronological order** using your own YouTube API key. No sign-in required — just paste your key and search.
-
-YouTube Search Tool: https://slotchy.github.io/YouTube-Search-Tool/
-
-Showcase Video: https://www.youtube.com/watch?v=Up4EvgwXWqs
+                     
+## YouTube Search Tool: https://slotchy.github.io/YouTube-Search-Tool
 
 ---
 

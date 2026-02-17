@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Search</title>
+    <title>YouTube Search Tool</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -87,7 +87,6 @@
 
         input::placeholder { color: #a1a1aa; }
 
-        /* Mode buttons */
         .mode-buttons {
             display: flex;
             gap: 20px;
@@ -122,7 +121,6 @@
             background: #1e1e28;
         }
 
-        /* Date Filter */
         .date-filter-section { margin-bottom: 20px; }
 
         .date-filter-header {
@@ -201,7 +199,6 @@
             padding: 8px 12px;
         }
 
-        /* Single / Range tabs */
         .date-mode-tabs {
             display: flex;
             gap: 8px;
@@ -229,7 +226,6 @@
             color: #fff;
         }
 
-        /* Range picking hint */
         .range-hint {
             font-size: 12px;
             color: #a1a1aa;
@@ -239,7 +235,28 @@
 
         .range-hint.picking-end { color: #a78bfa; }
 
-        /* Calendar */
+        .cal-year-toggle {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .cal-year-toggle label {
+            color: #8b5cf6;
+            font-size: 14px;
+        }
+
+        #yearSelect {
+            background: #1e1e28;
+            border: 2px solid #8b5cf6;
+            color: #e5e5e5;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+        }
+
         .calendar-wrapper {
             background: #13131c;
             border: 2px solid #8b5cf6;
@@ -322,7 +339,6 @@
             color: #a78bfa;
         }
 
-        /* Single selection */
         .cal-cell.selected {
             background: #8b5cf6;
             color: #fff;
@@ -330,7 +346,6 @@
             font-weight: bold;
         }
 
-        /* Range styles */
         .cal-cell.range-start,
         .cal-cell.range-end {
             background: #8b5cf6;
@@ -345,12 +360,10 @@
             border-radius: 0;
         }
 
-        /* Rounded caps on range */
         .cal-cell.range-start { border-radius: 4px 0 0 4px; }
         .cal-cell.range-end   { border-radius: 0 4px 4px 0; }
         .cal-cell.range-start.range-end { border-radius: 4px; }
 
-        /* Selected date display */
         .selected-dates-display {
             background: #0d0d15;
             border: 1px solid #3a3a4e;
@@ -359,6 +372,31 @@
             font-size: 13px;
             color: #a78bfa;
             min-height: 36px;
+        }
+
+        #hourFilterSection {
+            margin-top: 16px;
+            padding: 14px;
+            background: #0d0d15;
+            border: 1px solid #3a3a4e;
+            border-radius: 4px;
+        }
+
+        #hourFilterSection label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a1a1aa;
+            font-size: 14px;
+        }
+
+        #hourFilterSection input[type="time"] {
+            background: #1e1e28;
+            border: 2px solid #8b5cf6;
+            color: #e5e5e5;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            width: 110px;
         }
 
         .clear-dates-btn {
@@ -379,7 +417,6 @@
             color: #e5e5e5;
         }
 
-        /* Search button */
         .search-btn {
             width: 100%;
             padding: 16px;
@@ -447,6 +484,68 @@
 
         .result-link:hover { text-decoration: underline; }
 
+        .filter-shorts-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: #13131c;
+            border: 2px solid #3a3a4e;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            user-select: none;
+        }
+
+        .filter-shorts-row:hover { border-color: #8b5cf6; }
+
+        .filter-shorts-row input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #8b5cf6;
+            border-radius: 4px;
+            background: #1e1e28;
+            cursor: pointer;
+            flex-shrink: 0;
+            position: relative;
+            transition: background 0.2s;
+        }
+
+        .filter-shorts-row input[type="checkbox"]:checked {
+            background: #8b5cf6;
+        }
+
+        .filter-shorts-row input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .filter-shorts-label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .filter-shorts-label span:first-child {
+            color: #e5e5e5;
+            font-size: 14px;
+        }
+
+        .filter-shorts-label span:last-child {
+            color: #555;
+            font-size: 11px;
+        }
+
         .api-key-toggle {
             display: inline-block;
             margin-left: 10px;
@@ -487,7 +586,7 @@
     <div class="particles" id="particles"></div>
 
     <div class="container">
-        <h1>YouTube Search</h1>
+        <h1>YouTube Search Tool</h1>
 
         <div class="input-section">
 
@@ -510,7 +609,6 @@
                 <button class="mode-btn"         id="livestreamsBtn" onclick="setMode('livestreams')">Livestreams</button>
             </div>
 
-            <!-- Date Filter -->
             <div class="date-filter-section">
                 <div class="date-filter-header">
                     <label>Filter by Date</label>
@@ -527,30 +625,54 @@
                         📅 Date filtering searches videos only — livestreams are not available with this option.
                     </div>
 
-                    <!-- Single / Range tabs -->
                     <div class="date-mode-tabs">
                         <div class="date-tab active" id="tabSingle" onclick="setDateMode('single')">Single Day</div>
                         <div class="date-tab"         id="tabRange"  onclick="setDateMode('range')">Date Range</div>
                     </div>
 
-                    <!-- Range picking hint -->
                     <div class="range-hint" id="rangeHint"></div>
 
-                    <!-- Calendar -->
                     <div class="calendar-wrapper">
+                        <div class="cal-year-toggle">
+                            <label>Year:</label>
+                            <select id="yearSelect" onchange="changeYear(this.value)"></select>
+                        </div>
                         <div class="cal-nav">
-                            <button class="cal-nav-btn" onclick="changeMonth(-1)">&#8249;</button>
+                            <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
                             <div class="cal-month-year" id="calMonthYear"></div>
-                            <button class="cal-nav-btn" onclick="changeMonth(1)">&#8250;</button>
+                            <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
                         </div>
                         <div class="cal-grid" id="calGrid"></div>
                     </div>
 
                     <div class="selected-dates-display" id="selectedDatesDisplay">No date selected</div>
-                    <button class="clear-dates-btn" onclick="clearDates()">&#x2715; Clear</button>
+
+                    <div id="hourFilterSection" style="display: none;">
+                        <label>Hour Filter (your local timezone — auto-converted to UTC)</label>
+                        <div style="display:flex;gap:30px;">
+                            <div>
+                                <span style="font-size:12px;color:#a78bfa;">Start</span><br>
+                                <input type="time" id="startHour" value="00:00">
+                            </div>
+                            <div>
+                                <span style="font-size:12px;color:#a78bfa;">End</span><br>
+                                <input type="time" id="endHour" value="23:59">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="clear-dates-btn" onclick="clearDates()">✕ Clear</button>
 
                 </div>
             </div>
+
+            <label class="filter-shorts-row" for="filterShorts">
+                <input type="checkbox" id="filterShorts">
+                <div class="filter-shorts-label">
+                    <span>Filter Out Shorts</span>
+                    <span>Hides videos 60 seconds or under — fetches extra details per result</span>
+                </div>
+            </label>
 
             <button class="search-btn" id="searchBtn" onclick="searchYouTube()">Find Most Recent</button>
         </div>
@@ -560,25 +682,20 @@
     </div>
 
     <script>
-        /* ─── State ─── */
         let currentMode  = 'videos';
         let showApiKey   = false;
         let dateEnabled  = false;
-        let dateMode     = 'single';   // 'single' | 'range'
+        let dateMode     = 'single';
 
-        // Single
         let selectedDate = null;
-
-        // Range
         let rangeStart   = null;
         let rangeEnd     = null;
-        let rangePicking = 'start';    // 'start' | 'end'
+        let rangePicking = 'start';
 
         const today = new Date();
         let calYear  = today.getFullYear();
         let calMonth = today.getMonth();
 
-        /* ─── Particles ─── */
         function createParticles() {
             const container = document.getElementById('particles');
             for (let i = 0; i < 100; i++) {
@@ -595,24 +712,35 @@
             }
         }
 
-        /* ─── Init ─── */
+        function populateYearSelect() {
+            const select = document.getElementById('yearSelect');
+            const currentYear = today.getFullYear();
+            select.innerHTML = '';
+            for (let y = 2005; y <= currentYear; y++) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.text = y;
+                if (y === calYear) opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const saved = localStorage.getItem('youtube_api_key');
             if (saved) document.getElementById('apiKey').value = saved;
             createParticles();
+            populateYearSelect();
             renderCalendar();
             document.getElementById('searchQuery').addEventListener('keypress', e => {
                 if (e.key === 'Enter') searchYouTube();
             });
         });
 
-        /* ─── API key ─── */
         function toggleApiKeyVisibility() {
             showApiKey = !showApiKey;
             document.getElementById('apiKey').type = showApiKey ? 'text' : 'password';
         }
 
-        /* ─── Video / Livestream mode ─── */
         function setMode(mode) {
             if (mode === 'livestreams' && dateEnabled) return;
             currentMode = mode;
@@ -620,7 +748,6 @@
             document.getElementById('livestreamsBtn').classList.toggle('active', mode === 'livestreams');
         }
 
-        /* ─── Date filter toggle ─── */
         function toggleDateFilter() {
             dateEnabled = document.getElementById('dateFilterToggle').checked;
             const body  = document.getElementById('dateFilterBody');
@@ -639,19 +766,18 @@
                 clearDates();
             }
 
-            // Button says "Search" the moment date filter is switched on
             updateButtonLabel();
+            updateHourFilterVisibility();
         }
 
-        /* ─── Date mode (single / range) ─── */
         function setDateMode(mode) {
             dateMode = mode;
             document.getElementById('tabSingle').classList.toggle('active', mode === 'single');
             document.getElementById('tabRange').classList.toggle('active',  mode === 'range');
             clearDates();
+            updateHourFilterVisibility();
         }
 
-        /* ─── Calendar helpers ─── */
         function isSameDay(a, b) {
             return a && b &&
                 a.getFullYear() === b.getFullYear() &&
@@ -672,7 +798,6 @@
             return d > n;
         }
 
-        /* ─── Render calendar ─── */
         function renderCalendar() {
             const months = ['January','February','March','April','May','June',
                             'July','August','September','October','November','December'];
@@ -715,7 +840,6 @@
                         const isEnd   = isSameDay(date, rangeEnd);
                         if (isStart) el.classList.add('range-start');
                         if (isEnd)   el.classList.add('range-end');
-                        if (isStart && isEnd) { /* single-point range — just looks like selected */ }
                         if (isBetween(date, rangeStart, rangeEnd)) el.classList.add('in-range');
                     }
 
@@ -727,9 +851,9 @@
 
             updateSelectedDisplay();
             updateRangeHint();
+            updateHourFilterVisibility();
         }
 
-        /* ─── Day click ─── */
         function handleDayClick(date) {
             if (dateMode === 'single') {
                 selectedDate = date;
@@ -749,18 +873,29 @@
                 }
             }
             renderCalendar();
-            // Button label stays "Search" while filter is on (no extra change needed here)
+            updateHourFilterVisibility();
         }
 
-        /* ─── Month nav ─── */
-        function changeMonth(delta) {
-            calMonth += delta;
-            if (calMonth < 0)  { calMonth = 11; calYear--; }
-            if (calMonth > 11) { calMonth = 0;  calYear++; }
+        function changeYear(newYear) {
+            calYear = parseInt(newYear);
             renderCalendar();
         }
 
-        /* ─── Clear ─── */
+        function changeMonth(delta) {
+            calMonth += delta;
+            if (calMonth < 0) {
+                calMonth = 11;
+                calYear--;
+                document.getElementById('yearSelect').value = calYear;
+            }
+            if (calMonth > 11) {
+                calMonth = 0;
+                calYear++;
+                document.getElementById('yearSelect').value = calYear;
+            }
+            renderCalendar();
+        }
+
         function clearDates() {
             selectedDate = null;
             rangeStart   = null;
@@ -768,9 +903,9 @@
             rangePicking = 'start';
             renderCalendar();
             updateButtonLabel();
+            updateHourFilterVisibility();
         }
 
-        /* ─── Display helpers ─── */
         function formatDate(d) {
             if (!d) return '—';
             return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -808,30 +943,28 @@
             }
         }
 
-        /* ─── Button label ─── */
+        function updateHourFilterVisibility() {
+            const sec = document.getElementById('hourFilterSection');
+            let show = dateEnabled;
+            if (dateMode === 'single') {
+                show = show && selectedDate !== null;
+            } else {
+                show = show && rangeStart !== null && rangeEnd !== null;
+            }
+            sec.style.display = show ? 'block' : 'none';
+        }
+
         function updateButtonLabel() {
-            // "Search" the moment date filter is on; "Find Most Recent" when it's off
             document.getElementById('searchBtn').textContent =
                 dateEnabled ? 'Search' : 'Find Most Recent';
         }
 
-        /* ─── RFC 3339 timestamps ─── */
-        function toRFC3339Start(d) {
-            return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0).toISOString();
-        }
-
-        function toRFC3339End(d) {
-            return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59).toISOString();
-        }
-
-        /* ─── Status ─── */
         function setStatus(msg, type = 'info') {
             const el = document.getElementById('status');
             el.textContent = msg;
             el.className   = 'status ' + type;
         }
 
-        /* ─── Time ago ─── */
         function timeAgo(dateString) {
             if (!dateString) return '?';
             try {
@@ -847,7 +980,16 @@
             } catch { return '?'; }
         }
 
-        /* ─── Main search ─── */
+        function parseDuration(iso) {
+            // Parses ISO 8601 duration e.g. PT1M30S → seconds
+            const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+            if (!match) return 0;
+            const h = parseInt(match[1] || 0);
+            const m = parseInt(match[2] || 0);
+            const s = parseInt(match[3] || 0);
+            return h * 3600 + m * 60 + s;
+        }
+
         async function searchYouTube() {
             const apiKey = document.getElementById('apiKey').value.trim();
             const query  = document.getElementById('searchQuery').value.trim();
@@ -855,7 +997,6 @@
             if (!apiKey) { setStatus('Please enter your API key', 'error'); return; }
             if (!query)  { setStatus('Please enter a search topic', 'error'); return; }
 
-            // Validate date selection
             if (dateEnabled) {
                 if (dateMode === 'single' && !selectedDate) {
                     setStatus('Please select a date on the calendar', 'error'); return;
@@ -876,23 +1017,30 @@
             try {
                 let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&order=date&maxResults=50&key=${apiKey}`;
 
-                // Livestreams only when date filter is off
                 if (!dateEnabled && currentMode === 'livestreams') {
                     url += '&eventType=live';
                 }
 
-                // Inject date bounds
                 if (dateEnabled) {
-                    let after, before;
+                    let startBase, endBase;
                     if (dateMode === 'single') {
-                        after  = toRFC3339Start(selectedDate);
-                        before = toRFC3339End(selectedDate);
+                        startBase = endBase = selectedDate;
                     } else {
-                        const s = rangeStart < rangeEnd ? rangeStart : rangeEnd;
-                        const e = rangeStart < rangeEnd ? rangeEnd   : rangeStart;
-                        after  = toRFC3339Start(s);
-                        before = toRFC3339End(e);
+                        startBase = rangeStart < rangeEnd ? rangeStart : rangeEnd;
+                        endBase   = rangeStart < rangeEnd ? rangeEnd   : rangeStart;
                     }
+
+                    const startTimeStr = document.getElementById('startHour').value || '00:00';
+                    const endTimeStr   = document.getElementById('endHour').value   || '23:59';
+                    const [shh, smm] = startTimeStr.split(':').map(Number);
+                    const [ehh, emm] = endTimeStr.split(':').map(Number);
+
+                    const startLocal = new Date(startBase.getFullYear(), startBase.getMonth(), startBase.getDate(), shh, smm, 0);
+                    const endLocal   = new Date(endBase.getFullYear(),   endBase.getMonth(),   endBase.getDate(),   ehh, emm, 59);
+
+                    const after = startLocal.toISOString();
+                    const before = endLocal.toISOString();
+
                     url += `&publishedAfter=${encodeURIComponent(after)}`;
                     url += `&publishedBefore=${encodeURIComponent(before)}`;
                 }
@@ -907,7 +1055,7 @@
                     return;
                 }
 
-                const items = data.items || [];
+                let items = (data.items || []).filter(i => i.id.videoId);
 
                 if (items.length === 0) {
                     setStatus('No results found for the selected criteria', 'info');
@@ -916,7 +1064,35 @@
                     return;
                 }
 
-                setStatus(`Found ${items.length} result${items.length !== 1 ? 's' : ''}`, 'success');
+                // Filter out Shorts if checkbox is checked
+                const filterShorts = document.getElementById('filterShorts').checked;
+                if (filterShorts) {
+                    setStatus('Checking video durations...', 'info');
+                    const videoIds = items.map(i => i.id.videoId).join(',');
+                    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${apiKey}`;
+                    const detailsRes  = await fetch(detailsUrl);
+                    const detailsData = await detailsRes.json();
+
+                    if (!detailsData.error) {
+                        const durationMap = {};
+                        (detailsData.items || []).forEach(v => {
+                            durationMap[v.id] = parseDuration(v.contentDetails.duration);
+                        });
+                        items = items.filter(i => {
+                            const secs = durationMap[i.id.videoId];
+                            return secs === undefined || secs > 60;
+                        });
+                    }
+                }
+
+                if (items.length === 0) {
+                    setStatus('No results found after filtering out Shorts', 'info');
+                    btn.disabled = false;
+                    updateButtonLabel();
+                    return;
+                }
+
+                setStatus(`Found ${items.length} result${items.length !== 1 ? 's' : ''}${filterShorts ? ' (Shorts hidden)' : ''}`, 'success');
 
                 const container = document.getElementById('results');
                 items.forEach(item => {

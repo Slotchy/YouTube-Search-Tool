@@ -594,23 +594,124 @@
 
         .api-key-toggle:hover { color: var(--accent-light); }
 
-        .api-help-btn {
-            display: inline-block;
+        .api-help-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
             margin-top: 10px;
-            padding: 9px 18px;
-            background: var(--accent);
-            border: none;
+            padding: 8px 16px;
+            background: transparent;
+            border: 2px solid var(--accent);
             border-radius: 4px;
-            color: #fff;
+            color: var(--accent);
             font-family: 'Consolas', monospace;
             font-size: 13px;
             font-weight: bold;
             cursor: pointer;
-            text-decoration: none;
+            transition: background 0.2s, color 0.2s, border-color 0.3s;
+            user-select: none;
+        }
+
+        .api-help-toggle:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .api-help-toggle .chevron {
+            display: inline-block;
+            transition: transform 0.25s;
+            font-style: normal;
+            font-size: 11px;
+        }
+
+        .api-help-toggle.open .chevron { transform: rotate(180deg); }
+
+        .api-help-dropdown {
+            display: none;
+            margin-top: 10px;
+            background: #0d0d15;
+            border: 1px solid var(--accent-dim);
+            border-radius: 6px;
+            padding: 16px 18px;
+            animation: fadeSlideDown 0.2s ease;
+        }
+
+        .api-help-dropdown.visible { display: block; }
+
+        .api-help-dropdown h3 {
+            font-size: 13px;
+            color: var(--accent-light);
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .api-steps {
+            list-style: none;
+            margin-bottom: 14px;
+        }
+
+        .api-steps li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 5px 0;
+            font-size: 13px;
+            color: #c4c4cc;
+            border-bottom: 1px solid #1a1a28;
+        }
+
+        .api-steps li:last-child { border-bottom: none; }
+
+        .api-steps .step-num {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #fff;
+            margin-top: 1px;
             transition: background 0.3s;
         }
 
-        .api-help-btn:hover { background: var(--accent-light); }
+        .api-quota-note {
+            font-size: 11px;
+            color: #666;
+            background: #13131c;
+            border-left: 2px solid var(--accent-dim);
+            padding: 7px 10px;
+            border-radius: 0 4px 4px 0;
+            margin-bottom: 14px;
+            line-height: 1.5;
+            transition: border-color 0.3s;
+        }
+
+        .api-quota-note strong { color: #999; }
+
+        .api-video-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #aaa;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            text-decoration: none;
+            transition: border-color 0.2s, color 0.2s, background 0.2s;
+        }
+
+        .api-video-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+            background: #13131c;
+        }
 
         @media (max-width: 768px) {
             h1 { font-size: 1.8em; }
@@ -637,7 +738,27 @@
                         <span class="api-key-toggle" onclick="toggleApiKeyVisibility()">show/hide</span>
                     </label>
                     <input type="password" id="apiKey" placeholder="Paste your YouTube API key here">
-                    <a class="api-help-btn" href="https://youtu.be/z4gm4YPE_B0?t=138" target="_blank">&#9654; How To Get API Key</a>
+
+                    <button class="api-help-toggle" id="apiHelpToggle" onclick="toggleApiHelp()">
+                        🔑 How to Get an API Key <i class="chevron">▼</i>
+                    </button>
+
+                    <div class="api-help-dropdown" id="apiHelpDropdown">
+                        <h3>🔑 How to Get a YouTube API Key</h3>
+                        <ol class="api-steps">
+                            <li><span class="step-num">1</span> Go to <strong style="color:#e5e5e5;">console.cloud.google.com</strong></li>
+                            <li><span class="step-num">2</span> Create a new project or select an existing one</li>
+                            <li><span class="step-num">3</span> Enable <strong style="color:#e5e5e5;">YouTube Data API v3</strong></li>
+                            <li><span class="step-num">4</span> Go to <strong style="color:#e5e5e5;">Credentials → Create Credentials → API Key</strong></li>
+                            <li><span class="step-num">5</span> Copy your key and paste it above</li>
+                        </ol>
+                        <div class="api-quota-note">
+                            <strong>Quota:</strong> Free tier = 10,000 units/day &nbsp;·&nbsp; Each search ≈ 100 units &nbsp;·&nbsp; Filter Out Shorts adds ~1 unit/video
+                        </div>
+                        <a class="api-video-btn" href="https://youtu.be/z4gm4YPE_B0?t=138" target="_blank">
+                            ▶ Watch video tutorial
+                        </a>
+                    </div>
                 </div>
 
                 <div class="input-group">
@@ -834,6 +955,13 @@
         function toggleApiKeyVisibility() {
             showApiKey = !showApiKey;
             document.getElementById('apiKey').type = showApiKey ? 'text' : 'password';
+        }
+
+        function toggleApiHelp() {
+            const toggle   = document.getElementById('apiHelpToggle');
+            const dropdown = document.getElementById('apiHelpDropdown');
+            const open     = dropdown.classList.toggle('visible');
+            toggle.classList.toggle('open', open);
         }
 
         function setMode(mode) {

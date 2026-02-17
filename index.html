@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Search</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Consolas', 'Monaco', monospace;
@@ -22,10 +18,8 @@
 
         .particles {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
             z-index: 0;
         }
@@ -40,7 +34,7 @@
 
         @keyframes float {
             from { transform: translateX(0); }
-            to { transform: translateX(100vw); }
+            to   { transform: translateX(100vw); }
         }
 
         .container {
@@ -65,9 +59,7 @@
             margin-bottom: 30px;
         }
 
-        .input-group {
-            margin-bottom: 20px;
-        }
+        .input-group { margin-bottom: 20px; }
 
         label {
             display: block;
@@ -93,10 +85,9 @@
             border-color: #a78bfa;
         }
 
-        input::placeholder {
-            color: #a1a1aa;
-        }
+        input::placeholder { color: #a1a1aa; }
 
+        /* Mode buttons */
         .mode-buttons {
             display: flex;
             gap: 20px;
@@ -116,15 +107,279 @@
             transition: all 0.3s;
         }
 
-        .mode-btn:hover {
-            background: #272733;
-        }
+        .mode-btn:hover:not(:disabled) { background: #272733; }
 
         .mode-btn.active {
             background: #8b5cf6;
             border-color: #8b5cf6;
         }
 
+        .mode-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #444;
+            color: #666;
+            background: #1e1e28;
+        }
+
+        /* Date Filter */
+        .date-filter-section { margin-bottom: 20px; }
+
+        .date-filter-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .date-filter-header label {
+            margin: 0;
+            font-size: 14px;
+            color: #a1a1aa;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #2e2e3e;
+            border: 2px solid #8b5cf6;
+            border-radius: 24px;
+            transition: background 0.3s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            left: 3px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #8b5cf6;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch input:checked + .toggle-slider { background: #8b5cf6; }
+
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(20px) translateY(-50%);
+            background: #fff;
+        }
+
+        .date-filter-body {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            animation: fadeSlideDown 0.25s ease;
+        }
+
+        .date-filter-body.visible { display: flex; }
+
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .date-mode-notice {
+            font-size: 12px;
+            color: #a78bfa;
+            background: #1a0f35;
+            border: 1px solid #4c3a7a;
+            border-radius: 4px;
+            padding: 8px 12px;
+        }
+
+        /* Single / Range tabs */
+        .date-mode-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .date-tab {
+            flex: 1;
+            padding: 9px;
+            background: #1e1e28;
+            border: 2px solid #8b5cf6;
+            border-radius: 4px;
+            color: #a1a1aa;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .date-tab:hover { background: #272733; color: #e5e5e5; }
+
+        .date-tab.active {
+            background: #8b5cf6;
+            border-color: #8b5cf6;
+            color: #fff;
+        }
+
+        /* Range picking hint */
+        .range-hint {
+            font-size: 12px;
+            color: #a1a1aa;
+            text-align: center;
+            min-height: 16px;
+        }
+
+        .range-hint.picking-end { color: #a78bfa; }
+
+        /* Calendar */
+        .calendar-wrapper {
+            background: #13131c;
+            border: 2px solid #8b5cf6;
+            border-radius: 8px;
+            padding: 18px;
+            user-select: none;
+        }
+
+        .cal-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .cal-nav-btn {
+            background: none;
+            border: 2px solid #8b5cf6;
+            border-radius: 4px;
+            color: #8b5cf6;
+            font-family: 'Consolas', monospace;
+            font-size: 16px;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cal-nav-btn:hover { background: #8b5cf6; color: #fff; }
+
+        .cal-month-year {
+            color: #e5e5e5;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .cal-day-name {
+            text-align: center;
+            color: #8b5cf6;
+            font-size: 11px;
+            padding: 4px 0 8px;
+            letter-spacing: 1px;
+        }
+
+        .cal-cell {
+            text-align: center;
+            padding: 7px 4px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #e5e5e5;
+            transition: background 0.12s, color 0.12s;
+            border: 2px solid transparent;
+        }
+
+        .cal-cell:hover:not(.empty):not(.future):not(.selected):not(.range-start):not(.range-end) {
+            background: #272733;
+            border-color: #8b5cf6;
+        }
+
+        .cal-cell.empty  { cursor: default; }
+
+        .cal-cell.future {
+            color: #3a3a4a;
+            cursor: not-allowed;
+        }
+
+        .cal-cell.today {
+            border-color: #8b5cf6;
+            color: #a78bfa;
+        }
+
+        /* Single selection */
+        .cal-cell.selected {
+            background: #8b5cf6;
+            color: #fff;
+            border-color: #8b5cf6;
+            font-weight: bold;
+        }
+
+        /* Range styles */
+        .cal-cell.range-start,
+        .cal-cell.range-end {
+            background: #8b5cf6;
+            color: #fff;
+            border-color: #8b5cf6;
+            font-weight: bold;
+        }
+
+        .cal-cell.in-range {
+            background: #2e1f5e;
+            color: #c4b5fd;
+            border-radius: 0;
+        }
+
+        /* Rounded caps on range */
+        .cal-cell.range-start { border-radius: 4px 0 0 4px; }
+        .cal-cell.range-end   { border-radius: 0 4px 4px 0; }
+        .cal-cell.range-start.range-end { border-radius: 4px; }
+
+        /* Selected date display */
+        .selected-dates-display {
+            background: #0d0d15;
+            border: 1px solid #3a3a4e;
+            border-radius: 4px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #a78bfa;
+            min-height: 36px;
+        }
+
+        .clear-dates-btn {
+            background: none;
+            border: 1px solid #3a3a4e;
+            border-radius: 4px;
+            color: #a1a1aa;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            padding: 6px 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            align-self: flex-start;
+        }
+
+        .clear-dates-btn:hover {
+            border-color: #8b5cf6;
+            color: #e5e5e5;
+        }
+
+        /* Search button */
         .search-btn {
             width: 100%;
             padding: 16px;
@@ -139,14 +394,8 @@
             font-weight: bold;
         }
 
-        .search-btn:hover {
-            background: #a78bfa;
-        }
-
-        .search-btn:disabled {
-            background: #4c4c5c;
-            cursor: not-allowed;
-        }
+        .search-btn:hover    { background: #a78bfa; }
+        .search-btn:disabled { background: #4c4c5c; cursor: not-allowed; }
 
         .status {
             text-align: center;
@@ -155,21 +404,11 @@
             min-height: 20px;
         }
 
-        .status.error {
-            color: #ef4444;
-        }
+        .status.error   { color: #ef4444; }
+        .status.success { color: #8b5cf6; }
+        .status.info    { color: #a1a1aa; }
 
-        .status.success {
-            color: #8b5cf6;
-        }
-
-        .status.info {
-            color: #a1a1aa;
-        }
-
-        .results {
-            margin-top: 40px;
-        }
+        .results { margin-top: 40px; }
 
         .result-card {
             background: #1e1e28;
@@ -206,9 +445,7 @@
             word-break: break-all;
         }
 
-        .result-link:hover {
-            text-decoration: underline;
-        }
+        .result-link:hover { text-decoration: underline; }
 
         .api-key-toggle {
             display: inline-block;
@@ -219,35 +456,26 @@
             text-decoration: underline;
         }
 
-        .api-key-toggle:hover {
-            color: #a78bfa;
-        }
+        .api-key-toggle:hover { color: #a78bfa; }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .mode-buttons {
-                flex-direction: column;
-            }
-
-            .mode-btn {
-                width: 100%;
-            }
+            h1 { font-size: 1.8em; }
+            .mode-buttons { flex-direction: column; }
+            .mode-btn { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div class="particles" id="particles"></div>
-    
+
     <div class="container">
         <h1>YouTube Search</h1>
-        
+
         <div class="input-section">
+
             <div class="input-group">
                 <label for="apiKey">
-                    YouTube API Key 
+                    YouTube API Key
                     <span class="api-key-toggle" onclick="toggleApiKeyVisibility()">show/hide</span>
                 </label>
                 <input type="password" id="apiKey" placeholder="Paste your YouTube API key here">
@@ -259,189 +487,454 @@
             </div>
 
             <div class="mode-buttons">
-                <button class="mode-btn active" id="videosBtn" onclick="setMode('videos')">Videos</button>
-                <button class="mode-btn" id="livestreamsBtn" onclick="setMode('livestreams')">Livestreams</button>
+                <button class="mode-btn active" id="videosBtn"      onclick="setMode('videos')">Videos</button>
+                <button class="mode-btn"         id="livestreamsBtn" onclick="setMode('livestreams')">Livestreams</button>
+            </div>
+
+            <!-- Date Filter -->
+            <div class="date-filter-section">
+                <div class="date-filter-header">
+                    <label>Filter by Date</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="dateFilterToggle" onchange="toggleDateFilter()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span id="dateFilterLabel" style="font-size:12px;color:#555;">Off</span>
+                </div>
+
+                <div class="date-filter-body" id="dateFilterBody">
+
+                    <div class="date-mode-notice">
+                        📅 Date filtering searches videos only — livestreams are not available with this option.
+                    </div>
+
+                    <!-- Single / Range tabs -->
+                    <div class="date-mode-tabs">
+                        <div class="date-tab active" id="tabSingle" onclick="setDateMode('single')">Single Day</div>
+                        <div class="date-tab"         id="tabRange"  onclick="setDateMode('range')">Date Range</div>
+                    </div>
+
+                    <!-- Range picking hint -->
+                    <div class="range-hint" id="rangeHint"></div>
+
+                    <!-- Calendar -->
+                    <div class="calendar-wrapper">
+                        <div class="cal-nav">
+                            <button class="cal-nav-btn" onclick="changeMonth(-1)">&#8249;</button>
+                            <div class="cal-month-year" id="calMonthYear"></div>
+                            <button class="cal-nav-btn" onclick="changeMonth(1)">&#8250;</button>
+                        </div>
+                        <div class="cal-grid" id="calGrid"></div>
+                    </div>
+
+                    <div class="selected-dates-display" id="selectedDatesDisplay">No date selected</div>
+                    <button class="clear-dates-btn" onclick="clearDates()">&#x2715; Clear</button>
+
+                </div>
             </div>
 
             <button class="search-btn" id="searchBtn" onclick="searchYouTube()">Find Most Recent</button>
         </div>
 
-        <div class="status" id="status"></div>
-
+        <div class="status"  id="status"></div>
         <div class="results" id="results"></div>
     </div>
 
     <script>
-        let currentMode = 'videos';
-        let showApiKey = false;
+        /* ─── State ─── */
+        let currentMode  = 'videos';
+        let showApiKey   = false;
+        let dateEnabled  = false;
+        let dateMode     = 'single';   // 'single' | 'range'
 
-        // Create floating particles
+        // Single
+        let selectedDate = null;
+
+        // Range
+        let rangeStart   = null;
+        let rangeEnd     = null;
+        let rangePicking = 'start';    // 'start' | 'end'
+
+        const today = new Date();
+        let calYear  = today.getFullYear();
+        let calMonth = today.getMonth();
+
+        /* ─── Particles ─── */
         function createParticles() {
             const container = document.getElementById('particles');
             for (let i = 0; i < 100; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
+                const p = document.createElement('div');
+                p.className = 'particle';
                 const size = Math.random() * 3 + 1;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.left = Math.random() * -20 + '%';
-                particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
-                particle.style.animationDelay = Math.random() * 5 + 's';
-                container.appendChild(particle);
+                p.style.width             = size + 'px';
+                p.style.height            = size + 'px';
+                p.style.top               = Math.random() * 100 + '%';
+                p.style.left              = Math.random() * -20 + '%';
+                p.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                p.style.animationDelay    = Math.random() * 5 + 's';
+                container.appendChild(p);
             }
         }
 
-        // Load saved API key on page load
+        /* ─── Init ─── */
         window.addEventListener('DOMContentLoaded', () => {
-            const savedKey = localStorage.getItem('youtube_api_key');
-            if (savedKey) {
-                document.getElementById('apiKey').value = savedKey;
-            }
+            const saved = localStorage.getItem('youtube_api_key');
+            if (saved) document.getElementById('apiKey').value = saved;
             createParticles();
-
-            // Enable search on Enter key
-            document.getElementById('searchQuery').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    searchYouTube();
-                }
+            renderCalendar();
+            document.getElementById('searchQuery').addEventListener('keypress', e => {
+                if (e.key === 'Enter') searchYouTube();
             });
         });
 
+        /* ─── API key ─── */
         function toggleApiKeyVisibility() {
-            const input = document.getElementById('apiKey');
             showApiKey = !showApiKey;
-            input.type = showApiKey ? 'text' : 'password';
+            document.getElementById('apiKey').type = showApiKey ? 'text' : 'password';
         }
 
+        /* ─── Video / Livestream mode ─── */
         function setMode(mode) {
+            if (mode === 'livestreams' && dateEnabled) return;
             currentMode = mode;
             document.getElementById('videosBtn').classList.toggle('active', mode === 'videos');
             document.getElementById('livestreamsBtn').classList.toggle('active', mode === 'livestreams');
         }
 
-        function setStatus(message, type = 'info') {
-            const statusEl = document.getElementById('status');
-            statusEl.textContent = message;
-            statusEl.className = 'status ' + type;
+        /* ─── Date filter toggle ─── */
+        function toggleDateFilter() {
+            dateEnabled = document.getElementById('dateFilterToggle').checked;
+            const body  = document.getElementById('dateFilterBody');
+            const lbl   = document.getElementById('dateFilterLabel');
+            const lsBtn = document.getElementById('livestreamsBtn');
+
+            body.classList.toggle('visible', dateEnabled);
+            lbl.textContent = dateEnabled ? 'On' : 'Off';
+            lbl.style.color = dateEnabled ? '#8b5cf6' : '#555';
+
+            if (dateEnabled) {
+                setMode('videos');
+                lsBtn.disabled = true;
+            } else {
+                lsBtn.disabled = false;
+                clearDates();
+            }
+
+            // Button says "Search" the moment date filter is switched on
+            updateButtonLabel();
         }
 
+        /* ─── Date mode (single / range) ─── */
+        function setDateMode(mode) {
+            dateMode = mode;
+            document.getElementById('tabSingle').classList.toggle('active', mode === 'single');
+            document.getElementById('tabRange').classList.toggle('active',  mode === 'range');
+            clearDates();
+        }
+
+        /* ─── Calendar helpers ─── */
+        function isSameDay(a, b) {
+            return a && b &&
+                a.getFullYear() === b.getFullYear() &&
+                a.getMonth()    === b.getMonth()    &&
+                a.getDate()     === b.getDate();
+        }
+
+        function isBetween(d, s, e) {
+            if (!s || !e) return false;
+            const t  = d.getTime();
+            const lo = Math.min(s.getTime(), e.getTime());
+            const hi = Math.max(s.getTime(), e.getTime());
+            return t > lo && t < hi;
+        }
+
+        function isFuture(d) {
+            const n = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            return d > n;
+        }
+
+        /* ─── Render calendar ─── */
+        function renderCalendar() {
+            const months = ['January','February','March','April','May','June',
+                            'July','August','September','October','November','December'];
+            document.getElementById('calMonthYear').textContent = months[calMonth] + ' ' + calYear;
+
+            const grid = document.getElementById('calGrid');
+            grid.innerHTML = '';
+
+            ['SU','MO','TU','WE','TH','FR','SA'].forEach(d => {
+                const el = document.createElement('div');
+                el.className   = 'cal-day-name';
+                el.textContent = d;
+                grid.appendChild(el);
+            });
+
+            const firstDay  = new Date(calYear, calMonth, 1).getDay();
+            const daysInMon = new Date(calYear, calMonth + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                const el = document.createElement('div');
+                el.className = 'cal-cell empty';
+                grid.appendChild(el);
+            }
+
+            for (let day = 1; day <= daysInMon; day++) {
+                const date = new Date(calYear, calMonth, day);
+                const el   = document.createElement('div');
+                el.className   = 'cal-cell';
+                el.textContent = day;
+
+                if (isFuture(date)) {
+                    el.classList.add('future');
+                } else {
+                    if (isSameDay(date, today)) el.classList.add('today');
+
+                    if (dateMode === 'single') {
+                        if (isSameDay(date, selectedDate)) el.classList.add('selected');
+                    } else {
+                        const isStart = isSameDay(date, rangeStart);
+                        const isEnd   = isSameDay(date, rangeEnd);
+                        if (isStart) el.classList.add('range-start');
+                        if (isEnd)   el.classList.add('range-end');
+                        if (isStart && isEnd) { /* single-point range — just looks like selected */ }
+                        if (isBetween(date, rangeStart, rangeEnd)) el.classList.add('in-range');
+                    }
+
+                    el.addEventListener('click', () => handleDayClick(date));
+                }
+
+                grid.appendChild(el);
+            }
+
+            updateSelectedDisplay();
+            updateRangeHint();
+        }
+
+        /* ─── Day click ─── */
+        function handleDayClick(date) {
+            if (dateMode === 'single') {
+                selectedDate = date;
+            } else {
+                if (rangePicking === 'start') {
+                    rangeStart   = date;
+                    rangeEnd     = null;
+                    rangePicking = 'end';
+                } else {
+                    if (date < rangeStart) {
+                        rangeEnd   = rangeStart;
+                        rangeStart = date;
+                    } else {
+                        rangeEnd = date;
+                    }
+                    rangePicking = 'start';
+                }
+            }
+            renderCalendar();
+            // Button label stays "Search" while filter is on (no extra change needed here)
+        }
+
+        /* ─── Month nav ─── */
+        function changeMonth(delta) {
+            calMonth += delta;
+            if (calMonth < 0)  { calMonth = 11; calYear--; }
+            if (calMonth > 11) { calMonth = 0;  calYear++; }
+            renderCalendar();
+        }
+
+        /* ─── Clear ─── */
+        function clearDates() {
+            selectedDate = null;
+            rangeStart   = null;
+            rangeEnd     = null;
+            rangePicking = 'start';
+            renderCalendar();
+            updateButtonLabel();
+        }
+
+        /* ─── Display helpers ─── */
+        function formatDate(d) {
+            if (!d) return '—';
+            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function updateSelectedDisplay() {
+            const el = document.getElementById('selectedDatesDisplay');
+            if (dateMode === 'single') {
+                el.textContent = selectedDate ? formatDate(selectedDate) : 'No date selected';
+            } else {
+                if (!rangeStart && !rangeEnd) {
+                    el.textContent = 'No range selected';
+                } else if (rangeStart && !rangeEnd) {
+                    el.textContent = `From: ${formatDate(rangeStart)}`;
+                } else {
+                    const s = rangeStart < rangeEnd ? rangeStart : rangeEnd;
+                    const e = rangeStart < rangeEnd ? rangeEnd   : rangeStart;
+                    el.textContent = `${formatDate(s)}  →  ${formatDate(e)}`;
+                }
+            }
+        }
+
+        function updateRangeHint() {
+            const el = document.getElementById('rangeHint');
+            if (dateMode !== 'range') { el.textContent = ''; return; }
+            if (rangePicking === 'start' && !rangeStart) {
+                el.textContent = 'Click a day to set the start date';
+                el.className   = 'range-hint';
+            } else if (rangePicking === 'end') {
+                el.textContent = 'Now click a day to set the end date';
+                el.className   = 'range-hint picking-end';
+            } else {
+                el.textContent = 'Range selected — click a new day to reset';
+                el.className   = 'range-hint';
+            }
+        }
+
+        /* ─── Button label ─── */
+        function updateButtonLabel() {
+            // "Search" the moment date filter is on; "Find Most Recent" when it's off
+            document.getElementById('searchBtn').textContent =
+                dateEnabled ? 'Search' : 'Find Most Recent';
+        }
+
+        /* ─── RFC 3339 timestamps ─── */
+        function toRFC3339Start(d) {
+            return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0).toISOString();
+        }
+
+        function toRFC3339End(d) {
+            return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59).toISOString();
+        }
+
+        /* ─── Status ─── */
+        function setStatus(msg, type = 'info') {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className   = 'status ' + type;
+        }
+
+        /* ─── Time ago ─── */
         function timeAgo(dateString) {
             if (!dateString) return '?';
             try {
-                const date = new Date(dateString);
-                const now = new Date();
-                const seconds = Math.max(0, Math.floor((now - date) / 1000));
-                
+                const date    = new Date(dateString);
+                const seconds = Math.max(0, Math.floor((new Date() - date) / 1000));
                 if (seconds < 60) return `${seconds} seconds ago`;
                 const minutes = Math.floor(seconds / 60);
-                if (minutes < 60) return `${minutes} minutes ago`;
+                if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
                 const hours = Math.floor(minutes / 60);
-                if (hours < 24) return `${hours} hours ago`;
+                if (hours < 24)   return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
                 const days = Math.floor(hours / 24);
-                if (days === 1) return '1 day ago';
-                return `${days} days ago`;
-            } catch {
-                return '?';
-            }
+                return days === 1 ? '1 day ago' : `${days} days ago`;
+            } catch { return '?'; }
         }
 
+        /* ─── Main search ─── */
         async function searchYouTube() {
             const apiKey = document.getElementById('apiKey').value.trim();
-            const query = document.getElementById('searchQuery').value.trim();
-            
-            if (!apiKey) {
-                setStatus('Please enter your API key', 'error');
-                return;
+            const query  = document.getElementById('searchQuery').value.trim();
+
+            if (!apiKey) { setStatus('Please enter your API key', 'error'); return; }
+            if (!query)  { setStatus('Please enter a search topic', 'error'); return; }
+
+            // Validate date selection
+            if (dateEnabled) {
+                if (dateMode === 'single' && !selectedDate) {
+                    setStatus('Please select a date on the calendar', 'error'); return;
+                }
+                if (dateMode === 'range' && (!rangeStart || !rangeEnd)) {
+                    setStatus('Please select both a start and end date', 'error'); return;
+                }
             }
 
-            if (!query) {
-                setStatus('Please enter a search topic', 'error');
-                return;
-            }
-
-            // Save API key to localStorage
             localStorage.setItem('youtube_api_key', apiKey);
 
-            // Disable button and show searching status
             const btn = document.getElementById('searchBtn');
-            btn.disabled = true;
+            btn.disabled    = true;
             btn.textContent = 'Searching...';
             setStatus('Searching...', 'info');
-
-            // Clear previous results
             document.getElementById('results').innerHTML = '';
 
             try {
-                // Build the YouTube API URL
                 let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&order=date&maxResults=50&key=${apiKey}`;
-                
-                if (currentMode === 'livestreams') {
+
+                // Livestreams only when date filter is off
+                if (!dateEnabled && currentMode === 'livestreams') {
                     url += '&eventType=live';
                 }
 
+                // Inject date bounds
+                if (dateEnabled) {
+                    let after, before;
+                    if (dateMode === 'single') {
+                        after  = toRFC3339Start(selectedDate);
+                        before = toRFC3339End(selectedDate);
+                    } else {
+                        const s = rangeStart < rangeEnd ? rangeStart : rangeEnd;
+                        const e = rangeStart < rangeEnd ? rangeEnd   : rangeStart;
+                        after  = toRFC3339Start(s);
+                        before = toRFC3339End(e);
+                    }
+                    url += `&publishedAfter=${encodeURIComponent(after)}`;
+                    url += `&publishedBefore=${encodeURIComponent(before)}`;
+                }
+
                 const response = await fetch(url);
-                const data = await response.json();
+                const data     = await response.json();
 
                 if (data.error) {
                     setStatus('Invalid API Key or quota exceeded', 'error');
                     btn.disabled = false;
-                    btn.textContent = 'Find Most Recent';
+                    updateButtonLabel();
                     return;
                 }
 
                 const items = data.items || [];
-                
+
                 if (items.length === 0) {
-                    setStatus('No results found', 'info');
+                    setStatus('No results found for the selected criteria', 'info');
                     btn.disabled = false;
-                    btn.textContent = 'Find Most Recent';
+                    updateButtonLabel();
                     return;
                 }
 
-                setStatus(`Found ${items.length} results`, 'success');
+                setStatus(`Found ${items.length} result${items.length !== 1 ? 's' : ''}`, 'success');
 
-                // Display results
-                const resultsContainer = document.getElementById('results');
+                const container = document.getElementById('results');
                 items.forEach(item => {
                     if (!item.id.videoId) return;
 
                     const card = document.createElement('div');
                     card.className = 'result-card';
-                    
+
                     const title = document.createElement('div');
-                    title.className = 'result-title';
+                    title.className   = 'result-title';
                     title.textContent = item.snippet.title;
 
                     const time = document.createElement('div');
-                    time.className = 'result-time';
+                    time.className   = 'result-time';
                     time.textContent = timeAgo(item.snippet.publishedAt);
 
                     const link = document.createElement('a');
-                    link.className = 'result-link';
-                    link.href = `https://youtu.be/${item.id.videoId}`;
+                    link.className   = 'result-link';
+                    link.href        = `https://youtu.be/${item.id.videoId}`;
                     link.textContent = `https://youtu.be/${item.id.videoId}`;
-                    link.target = '_blank';
-                    link.onclick = (e) => e.stopPropagation();
+                    link.target      = '_blank';
+                    link.onclick     = e => e.stopPropagation();
 
                     card.appendChild(title);
                     card.appendChild(time);
                     card.appendChild(link);
-
-                    card.onclick = () => {
-                        window.open(`https://youtu.be/${item.id.videoId}`, '_blank');
-                    };
-
-                    resultsContainer.appendChild(card);
+                    card.onclick = () => window.open(`https://youtu.be/${item.id.videoId}`, '_blank');
+                    container.appendChild(card);
                 });
 
-            } catch (error) {
-                setStatus('Search failed - check your API key and connection', 'error');
-                console.error(error);
+            } catch (err) {
+                setStatus('Search failed – check your API key and connection', 'error');
+                console.error(err);
             }
 
             btn.disabled = false;
-            btn.textContent = 'Find Most Recent';
+            updateButtonLabel();
         }
     </script>
 </body>

@@ -59,7 +59,6 @@
 
         .container { flex: 1; min-width: 0; }
 
-        /* ── Color Theme Panel ── */
         .theme-panel {
             display: flex;
             flex-direction: column;
@@ -757,7 +756,7 @@
                             <li><span class="step-num">9</span> Copy your key and paste it above</li>
                         </ol>
                         <div class="api-quota-note">
-                            <strong>Quota:</strong> Free tier = 10,000 units/day &nbsp;·&nbsp; Each search ≈ 100 units &nbsp;·&nbsp; Filter Out Shorts adds ~1 unit/video
+                            <strong>Quota:</strong> Free tier = 10,000 units/day &nbsp;·&nbsp; Each search ≈ 100 units
                         </div>
                         <a class="api-video-btn" href="https://youtu.be/z4gm4YPE_B0?t=138" target="_blank">
                             ▶ Watch video tutorial
@@ -773,6 +772,16 @@
                 <div class="mode-buttons">
                     <button class="mode-btn active" id="videosBtn"      onclick="setMode('videos')">Videos</button>
                     <button class="mode-btn"         id="livestreamsBtn" onclick="setMode('livestreams')">Livestreams</button>
+                </div>
+
+                <div id="durationFilter" style="margin-bottom:20px;">
+                    <label style="margin-bottom:10px;">Video Length</label>
+                    <div class="mode-buttons" style="margin-bottom:0;">
+                        <button class="mode-btn active" id="durAny"    onclick="setDuration('any')">Any</button>
+                        <button class="mode-btn"         id="durShort"  onclick="setDuration('short')">Short <span style="font-size:11px;opacity:0.7;">(&lt;4 min)</span></button>
+                        <button class="mode-btn"         id="durMedium" onclick="setDuration('medium')">Medium <span style="font-size:11px;opacity:0.7;">(4–20 min)</span></button>
+                        <button class="mode-btn"         id="durLong"   onclick="setDuration('long')">Long <span style="font-size:11px;opacity:0.7;">(20+ min)</span></button>
+                    </div>
                 </div>
 
                 <div class="date-filter-section">
@@ -836,7 +845,7 @@
                     <input type="checkbox" id="filterShorts">
                     <div class="filter-shorts-label">
                         <span>Filter Out Shorts</span>
-                        <span>Hides videos 60 seconds or under — fetches extra details per result</span>
+                        <span>Blocks videos with tags</span>
                     </div>
                 </label>
 
@@ -847,7 +856,6 @@
             <div class="results" id="results"></div>
         </div>
 
-        <!-- Color Theme Panel -->
         <div class="theme-panel" id="themePanel">
             <div class="theme-panel-label">Theme</div>
         </div>
@@ -855,7 +863,6 @@
     </div>
 
     <script>
-        // ── Theme definitions ──────────────────────────────────────────────
         const THEMES = [
             { name: 'Purple',   accent: '#8b5cf6', light: '#a78bfa', dark: '#6d28d9', bg: '#2e1f5e', bg2: '#1a0f35', dim: '#4c3a7a', tint: '#c4b5fd' },
             { name: 'Cyan',     accent: '#06b6d4', light: '#67e8f9', dark: '#0891b2', bg: '#0e3344', bg2: '#051c26', dim: '#1a5568', tint: '#a5f3fc' },
@@ -898,7 +905,6 @@
             });
         }
 
-        // ── App state ──────────────────────────────────────────────────────
         let currentMode  = 'videos';
         let showApiKey   = false;
         let dateEnabled  = false;
@@ -968,11 +974,21 @@
             toggle.classList.toggle('open', open);
         }
 
+        let currentDuration = 'any';
+
         function setMode(mode) {
             if (mode === 'livestreams' && dateEnabled) return;
             currentMode = mode;
             document.getElementById('videosBtn').classList.toggle('active', mode === 'videos');
             document.getElementById('livestreamsBtn').classList.toggle('active', mode === 'livestreams');
+            document.getElementById('durationFilter').style.display = mode === 'videos' ? 'block' : 'none';
+        }
+
+        function setDuration(dur) {
+            currentDuration = dur;
+            ['Any', 'Short', 'Medium', 'Long'].forEach(d => {
+                document.getElementById('dur' + d).classList.toggle('active', dur === d.toLowerCase());
+            });
         }
 
         function toggleDateFilter() {
@@ -1238,6 +1254,10 @@
                     url += '&eventType=live';
                 }
 
+                if (currentMode === 'videos' && currentDuration !== 'any') {
+                    url += `&videoDuration=${currentDuration}`;
+                }
+
                 if (dateEnabled) {
                     let startBase, endBase;
                     if (dateMode === 'single') {
@@ -1278,35 +1298,24 @@
                     return;
                 }
 
-                // Filter out Shorts if checkbox is checked
-                const filterShorts = document.getElementById('filterShorts').checked;
-                if (filterShorts) {
-                    setStatus('Checking video durations...', 'info');
-                    const videoIds    = items.map(i => i.id.videoId).join(',');
-                    const detailsUrl  = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${apiKey}`;
-                    const detailsRes  = await fetch(detailsUrl);
-                    const detailsData = await detailsRes.json();
-
-                    if (!detailsData.error) {
-                        const durationMap = {};
-                        (detailsData.items || []).forEach(v => {
-                            durationMap[v.id] = parseDuration(v.contentDetails.duration);
-                        });
-                        items = items.filter(i => {
-                            const secs = durationMap[i.id.videoId];
-                            return secs === undefined || secs > 60;
-                        });
-                    }
+                const noShorts = document.getElementById('filterShorts').checked;
+                if (noShorts) {
+                    setStatus('Filtering Shorts...', 'info');
+                    items = items.filter(item => {
+                        const title       = item.snippet.title       || '';
+                        const description = item.snippet.description || '';
+                        return !title.includes('#') && !description.includes('#');
+                    });
                 }
 
                 if (items.length === 0) {
-                    setStatus('No results found after filtering out Shorts', 'info');
+                    setStatus('No results found after filtering Shorts', 'info');
                     btn.disabled = false;
                     updateButtonLabel();
                     return;
                 }
 
-                setStatus(`Found ${items.length} result${items.length !== 1 ? 's' : ''}${filterShorts ? ' (Shorts hidden)' : ''}`, 'success');
+                setStatus(`Found ${items.length} result${items.length !== 1 ? 's' : ''}${noShorts ? ' (Shorts blocked)' : ''}`, 'success');
 
                 const container = document.getElementById('results');
                 items.forEach(item => {

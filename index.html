@@ -51,7 +51,7 @@
             display: flex;
             gap: 16px;
             align-items: flex-start;
-            max-width: 1260px;
+            max-width: 1340px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
@@ -59,7 +59,8 @@
 
         .container { flex: 1; min-width: 0; }
 
-        .theme-panel {
+        /* ── Shared panel styles ── */
+        .side-panel {
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -72,7 +73,7 @@
             flex-shrink: 0;
         }
 
-        .theme-panel-label {
+        .side-panel-label {
             font-size: 9px;
             color: #444;
             text-align: center;
@@ -81,6 +82,7 @@
             margin-bottom: 2px;
         }
 
+        /* ── Theme swatches ── */
         .swatch {
             width: 26px;
             height: 26px;
@@ -110,6 +112,60 @@
             line-height: 1;
         }
 
+        /* ── Language buttons ── */
+        .lang-btn {
+            width: 36px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid #2a2a3a;
+            background: #1a1a24;
+            color: #888;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-align: center;
+            line-height: 1;
+            transition: transform 0.15s, border-color 0.2s, color 0.2s, background 0.2s, box-shadow 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .lang-btn:hover { transform: scale(1.1); border-color: var(--accent); color: var(--accent-light); }
+
+        .lang-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-bg2);
+            color: var(--accent-tint);
+            box-shadow: 0 0 0 1px var(--accent-dim);
+        }
+
+        /* Tooltip */
+        .lang-btn::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            right: calc(100% + 10px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: #1e1e28;
+            border: 1px solid var(--accent-dim);
+            color: var(--accent-tint);
+            font-size: 11px;
+            white-space: nowrap;
+            padding: 4px 8px;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 10;
+        }
+
+        .lang-btn:hover::after { opacity: 1; }
+
+        /* ── Main styles ── */
         h1 {
             text-align: center;
             color: var(--accent);
@@ -712,12 +768,37 @@
             background: #13131c;
         }
 
-        @media (max-width: 768px) {
+        /* ── Lang change toast ── */
+        #langToast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1e1e28;
+            border: 1px solid var(--accent-dim);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--accent-tint);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 1000;
+            white-space: nowrap;
+        }
+
+        #langToast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 900px) {
             h1 { font-size: 1.8em; }
             .mode-buttons { flex-direction: column; }
             .mode-btn { width: 100%; }
-            .page-wrapper { flex-direction: column-reverse; gap: 12px; }
-            .theme-panel { flex-direction: row; flex-wrap: wrap; position: static; width: 100%; justify-content: center; }
+            .page-wrapper { flex-direction: column; gap: 12px; }
+            .side-panel { flex-direction: row; flex-wrap: wrap; position: static; width: 100%; justify-content: center; }
+            .side-panel .lang-btn::after { display: none; }
         }
     </style>
 </head>
@@ -726,90 +807,96 @@
 
     <div class="page-wrapper">
 
+        <!-- ── Language Panel (LEFT) ── -->
+        <div class="side-panel" id="langPanel">
+            <div class="side-panel-label" data-i18n="lang">Lang</div>
+        </div>
+
+        <!-- ── Main Content ── -->
         <div class="container">
-            <h1>YouTube Search Tool</h1>
+            <h1 data-i18n="title">YouTube Search Tool</h1>
 
             <div class="input-section">
 
                 <div class="input-group">
                     <label for="apiKey">
-                        YouTube API Key
-                        <span class="api-key-toggle" onclick="toggleApiKeyVisibility()">show/hide</span>
+                        <span data-i18n="apiKeyLabel">YouTube API Key</span>
+                        <span class="api-key-toggle" onclick="toggleApiKeyVisibility()" data-i18n="showHide">show/hide</span>
                     </label>
-                    <input type="password" id="apiKey" placeholder="Paste your YouTube API key here">
+                    <input type="password" id="apiKey" data-i18n-placeholder="apiKeyPlaceholder" placeholder="Paste your YouTube API key here">
 
                     <button class="api-help-toggle" id="apiHelpToggle" onclick="toggleApiHelp()">
-                        🔑 How to Get an API Key <i class="chevron">▼</i>
+                        🔑 <span data-i18n="howToGetKey">How to Get an API Key</span> <i class="chevron">▼</i>
                     </button>
 
                     <div class="api-help-dropdown" id="apiHelpDropdown">
-                        <h3>🔑 How to Get a YouTube API Key</h3>
+                        <h3>🔑 <span data-i18n="howToGetKey">How to Get a YouTube API Key</span></h3>
                         <ol class="api-steps">
-                            <li><span class="step-num">1</span> Go to <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent-light);text-decoration:underline;">console.cloud.google.com</a></li>
-                            <li><span class="step-num">2</span> Create a new project or select an existing one</li>
-                            <li><span class="step-num">3</span> Click the <strong style="color:#e5e5e5;">☰ Navigation Menu</strong> (top left)</li>
-                            <li><span class="step-num">4</span> Go to <strong style="color:#e5e5e5;">APIs &amp; Services → Library</strong></li>
-                            <li><span class="step-num">5</span> Search for and click <strong style="color:#e5e5e5;">YouTube Data API v3</strong></li>
-                            <li><span class="step-num">6</span> Click <strong style="color:#e5e5e5;">Enable</strong></li>
-                            <li><span class="step-num">7</span> Open the <strong style="color:#e5e5e5;">☰ Navigation Menu</strong> again and go to <strong style="color:#e5e5e5;">APIs &amp; Services → Credentials</strong></li>
-                            <li><span class="step-num">8</span> Click <strong style="color:#e5e5e5;">Create Credentials → API Key</strong></li>
-                            <li><span class="step-num">9</span> Copy your key and paste it above</li>
+                            <li><span class="step-num">1</span> <span data-i18n="step1">Go to</span> <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent-light);text-decoration:underline;">console.cloud.google.com</a></li>
+                            <li><span class="step-num">2</span> <span data-i18n="step2">Create a new project or select an existing one</span></li>
+                            <li><span class="step-num">3</span> <span data-i18n="step3">Click the <strong style="color:#e5e5e5;">☰ Navigation Menu</strong> (top left)</span></li>
+                            <li><span class="step-num">4</span> <span data-i18n="step4">Go to <strong style="color:#e5e5e5;">APIs &amp; Services → Library</strong></span></li>
+                            <li><span class="step-num">5</span> <span data-i18n="step5">Search for and click <strong style="color:#e5e5e5;">YouTube Data API v3</strong></span></li>
+                            <li><span class="step-num">6</span> <span data-i18n="step6">Click <strong style="color:#e5e5e5;">Enable</strong></span></li>
+                            <li><span class="step-num">7</span> <span data-i18n="step7">Open the <strong style="color:#e5e5e5;">☰ Navigation Menu</strong> again and go to <strong style="color:#e5e5e5;">APIs &amp; Services → Credentials</strong></span></li>
+                            <li><span class="step-num">8</span> <span data-i18n="step8">Click <strong style="color:#e5e5e5;">Create Credentials → API Key</strong></span></li>
+                            <li><span class="step-num">9</span> <span data-i18n="step9">Copy your key and paste it above</span></li>
                         </ol>
-                        <div class="api-quota-note">
+                        <div class="api-quota-note" data-i18n="quotaNote">
                             <strong>Quota:</strong> Free tier = 10,000 units/day &nbsp;·&nbsp; Each search ≈ 100 units
                         </div>
                         <a class="api-video-btn" href="https://youtu.be/z4gm4YPE_B0?t=138" target="_blank">
-                            ▶ Watch video tutorial
+                            ▶ <span data-i18n="watchTutorial">Watch video tutorial</span>
                         </a>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label for="searchQuery">Search Topic</label>
-                    <input type="text" id="searchQuery" placeholder="Enter search topic" maxlength="44">
+                    <label for="searchQuery" data-i18n="searchTopicLabel">Search Topic</label>
+                    <input type="text" id="searchQuery" data-i18n-placeholder="searchTopicPlaceholder" placeholder="Enter search topic" maxlength="44">
                 </div>
 
                 <div class="mode-buttons">
-                    <button class="mode-btn active" id="videosBtn"      onclick="setMode('videos')">Videos</button>
-                    <button class="mode-btn"         id="livestreamsBtn" onclick="setMode('livestreams')">Livestreams</button>
+                    <button class="mode-btn active" id="videosBtn"      onclick="setMode('videos')"      data-i18n="videos">Videos</button>
+                    <button class="mode-btn"         id="livestreamsBtn" onclick="setMode('livestreams')" data-i18n="livestreams">Livestreams</button>
                 </div>
 
                 <div id="durationFilter" style="margin-bottom:20px;">
-                    <label style="margin-bottom:10px;">Video Length</label>
+                    <label style="margin-bottom:10px;" data-i18n="videoLength">Video Length</label>
                     <div class="mode-buttons" style="margin-bottom:0;">
-                        <button class="mode-btn active" id="durAny"    onclick="setDuration('any')">Any</button>
-                        <button class="mode-btn"         id="durShort"  onclick="setDuration('short')">Short <span style="font-size:11px;opacity:0.7;">(&lt;4 min)</span></button>
-                        <button class="mode-btn"         id="durMedium" onclick="setDuration('medium')">Medium <span style="font-size:11px;opacity:0.7;">(4–20 min)</span></button>
-                        <button class="mode-btn"         id="durLong"   onclick="setDuration('long')">Long <span style="font-size:11px;opacity:0.7;">(20+ min)</span></button>
+                        <button class="mode-btn active" id="durAny"    onclick="setDuration('any')"    data-i18n="durAny">Any</button>
+                        <button class="mode-btn"         id="durShort"  onclick="setDuration('short')"  ><span data-i18n="durShort">Short</span> <span style="font-size:11px;opacity:0.7;">(&lt;4 min)</span></button>
+                        <button class="mode-btn"         id="durMedium" onclick="setDuration('medium')" ><span data-i18n="durMedium">Medium</span> <span style="font-size:11px;opacity:0.7;">(4–20 min)</span></button>
+                        <button class="mode-btn"         id="durLong"   onclick="setDuration('long')"   ><span data-i18n="durLong">Long</span> <span style="font-size:11px;opacity:0.7;">(20+ min)</span></button>
                     </div>
                 </div>
 
                 <div class="date-filter-section">
                     <div class="date-filter-header">
-                        <label>Filter by Date</label>
+                        <label data-i18n="filterByDate">Filter by Date</label>
                         <label class="toggle-switch">
                             <input type="checkbox" id="dateFilterToggle" onchange="toggleDateFilter()">
                             <span class="toggle-slider"></span>
                         </label>
-                        <span id="dateFilterLabel" style="font-size:12px;color:#555;">Off</span>
+                        <span id="dateFilterLabel" style="font-size:12px;color:#555;" data-i18n="off">Off</span>
                     </div>
 
                     <div class="date-filter-body" id="dateFilterBody">
 
-                        <div class="date-mode-notice">
+                        <div class="date-mode-notice" data-i18n="dateNotice">
                             📅 Date filtering searches videos only — livestreams are not available with this option.
                         </div>
 
                         <div class="date-mode-tabs">
-                            <div class="date-tab active" id="tabSingle" onclick="setDateMode('single')">Single Day</div>
-                            <div class="date-tab"         id="tabRange"  onclick="setDateMode('range')">Date Range</div>
+                            <div class="date-tab active" id="tabSingle" onclick="setDateMode('single')" data-i18n="singleDay">Single Day</div>
+                            <div class="date-tab"         id="tabRange"  onclick="setDateMode('range')"  data-i18n="dateRange">Date Range</div>
                         </div>
 
                         <div class="range-hint" id="rangeHint"></div>
 
                         <div class="calendar-wrapper">
                             <div class="cal-year-toggle">
-                                <label>Year:</label>
+                                <label data-i18n="year">Year:</label>
                                 <select id="yearSelect" onchange="changeYear(this.value)"></select>
                             </div>
                             <div class="cal-nav">
@@ -820,23 +907,23 @@
                             <div class="cal-grid" id="calGrid"></div>
                         </div>
 
-                        <div class="selected-dates-display" id="selectedDatesDisplay">No date selected</div>
+                        <div class="selected-dates-display" id="selectedDatesDisplay" data-i18n="noDateSelected">No date selected</div>
 
                         <div id="hourFilterSection" style="display: none;">
-                            <label>Hour Filter (your local timezone — auto-converted to UTC)</label>
+                            <label data-i18n="hourFilterLabel">Hour Filter (your local timezone — auto-converted to UTC)</label>
                             <div style="display:flex;gap:30px;">
                                 <div>
-                                    <span style="font-size:12px;color:var(--accent-light);">Start</span><br>
+                                    <span style="font-size:12px;color:var(--accent-light);" data-i18n="start">Start</span><br>
                                     <input type="time" id="startHour" value="00:00">
                                 </div>
                                 <div>
-                                    <span style="font-size:12px;color:var(--accent-light);">End</span><br>
+                                    <span style="font-size:12px;color:var(--accent-light);" data-i18n="end">End</span><br>
                                     <input type="time" id="endHour" value="23:59">
                                 </div>
                             </div>
                         </div>
 
-                        <button class="clear-dates-btn" onclick="clearDates()">✕ Clear</button>
+                        <button class="clear-dates-btn" onclick="clearDates()">✕ <span data-i18n="clear">Clear</span></button>
 
                     </div>
                 </div>
@@ -844,25 +931,681 @@
                 <label class="filter-shorts-row" for="filterShorts">
                     <input type="checkbox" id="filterShorts">
                     <div class="filter-shorts-label">
-                        <span>Filter Out Shorts</span>
-                        <span>Blocks videos with tags</span>
+                        <span data-i18n="filterShorts">Filter Out Shorts</span>
+                        <span data-i18n="filterShortsDesc">Blocks videos with tags</span>
                     </div>
                 </label>
 
-                <button class="search-btn" id="searchBtn" onclick="searchYouTube()">Find Most Recent</button>
+                <button class="search-btn" id="searchBtn" onclick="searchYouTube()" data-i18n="findMostRecent">Find Most Recent</button>
             </div>
 
             <div class="status"  id="status"></div>
             <div class="results" id="results"></div>
         </div>
 
-        <div class="theme-panel" id="themePanel">
-            <div class="theme-panel-label">Theme</div>
+        <!-- ── Theme Panel (RIGHT) ── -->
+        <div class="side-panel" id="themePanel">
+            <div class="side-panel-label" data-i18n="theme">Theme</div>
         </div>
 
     </div>
 
+    <!-- Toast notification -->
+    <div id="langToast"></div>
+
     <script>
+        // ══════════════════════════════════════════════════
+        //  TRANSLATIONS
+        // ══════════════════════════════════════════════════
+        const TRANSLATIONS = {
+            en: {
+                name: 'English',
+                flag: '🇺🇸',
+                dir: 'ltr',
+                title: 'YouTube Search Tool',
+                apiKeyLabel: 'YouTube API Key',
+                showHide: 'show/hide',
+                apiKeyPlaceholder: 'Paste your YouTube API key here',
+                howToGetKey: 'How to Get an API Key',
+                step1: 'Go to',
+                step2: 'Create a new project or select an existing one',
+                step3: 'Click the <strong style="color:#e5e5e5;">☰ Navigation Menu</strong> (top left)',
+                step4: 'Go to <strong style="color:#e5e5e5;">APIs &amp; Services → Library</strong>',
+                step5: 'Search for and click <strong style="color:#e5e5e5;">YouTube Data API v3</strong>',
+                step6: 'Click <strong style="color:#e5e5e5;">Enable</strong>',
+                step7: 'Open the <strong style="color:#e5e5e5;">☰ Navigation Menu</strong> again and go to <strong style="color:#e5e5e5;">APIs &amp; Services → Credentials</strong>',
+                step8: 'Click <strong style="color:#e5e5e5;">Create Credentials → API Key</strong>',
+                step9: 'Copy your key and paste it above',
+                quotaNote: '<strong>Quota:</strong> Free tier = 10,000 units/day &nbsp;·&nbsp; Each search ≈ 100 units',
+                watchTutorial: 'Watch video tutorial',
+                searchTopicLabel: 'Search Topic',
+                searchTopicPlaceholder: 'Enter search topic',
+                videos: 'Videos',
+                livestreams: 'Livestreams',
+                videoLength: 'Video Length',
+                durAny: 'Any',
+                durShort: 'Short',
+                durMedium: 'Medium',
+                durLong: 'Long',
+                filterByDate: 'Filter by Date',
+                off: 'Off',
+                on: 'On',
+                dateNotice: '📅 Date filtering searches videos only — livestreams are not available with this option.',
+                singleDay: 'Single Day',
+                dateRange: 'Date Range',
+                year: 'Year:',
+                noDateSelected: 'No date selected',
+                noRangeSelected: 'No range selected',
+                rangeFrom: 'From:',
+                hourFilterLabel: 'Hour Filter (your local timezone — auto-converted to UTC)',
+                start: 'Start',
+                end: 'End',
+                clear: 'Clear',
+                filterShorts: 'Filter Out Shorts',
+                filterShortsDesc: 'Blocks videos with tags',
+                findMostRecent: 'Find Most Recent',
+                search: 'Search',
+                searching: 'Searching...',
+                filteringShorts: 'Filtering Shorts...',
+                noResults: 'No results found for the selected criteria',
+                noResultsAfterFilter: 'No results found after filtering Shorts',
+                found: 'Found',
+                result: 'result',
+                results: 'results',
+                shortsBlocked: '(Shorts blocked)',
+                invalidKey: 'Invalid API Key or quota exceeded',
+                searchFailed: 'Search failed – check your API key and connection',
+                enterApiKey: 'Please enter your API key',
+                enterTopic: 'Please enter a search topic',
+                selectDate: 'Please select a date on the calendar',
+                selectRange: 'Please select both a start and end date',
+                rangePickStart: 'Click a day to set the start date',
+                rangePickEnd: 'Now click a day to set the end date',
+                rangeSelected: 'Range selected — click a new day to reset',
+                lang: 'Lang',
+                theme: 'Theme',
+                months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+                days: ['SU','MO','TU','WE','TH','FR','SA'],
+                langSwitched: 'Language: English',
+            },
+            es: {
+                name: 'Español',
+                flag: '🇪🇸',
+                dir: 'ltr',
+                title: 'Buscador de YouTube',
+                apiKeyLabel: 'Clave API de YouTube',
+                showHide: 'mostrar/ocultar',
+                apiKeyPlaceholder: 'Pega tu clave API aquí',
+                howToGetKey: 'Cómo obtener una clave API',
+                step1: 'Ve a',
+                step2: 'Crea un proyecto nuevo o selecciona uno existente',
+                step3: 'Haz clic en el <strong style="color:#e5e5e5;">☰ Menú de navegación</strong> (arriba a la izquierda)',
+                step4: 'Ve a <strong style="color:#e5e5e5;">APIs y Servicios → Biblioteca</strong>',
+                step5: 'Busca y haz clic en <strong style="color:#e5e5e5;">YouTube Data API v3</strong>',
+                step6: 'Haz clic en <strong style="color:#e5e5e5;">Habilitar</strong>',
+                step7: 'Abre el <strong style="color:#e5e5e5;">☰ Menú de navegación</strong> de nuevo y ve a <strong style="color:#e5e5e5;">APIs y Servicios → Credenciales</strong>',
+                step8: 'Haz clic en <strong style="color:#e5e5e5;">Crear credenciales → Clave API</strong>',
+                step9: 'Copia tu clave y pégala arriba',
+                quotaNote: '<strong>Cuota:</strong> Nivel gratuito = 10,000 unidades/día &nbsp;·&nbsp; Cada búsqueda ≈ 100 unidades',
+                watchTutorial: 'Ver tutorial en video',
+                searchTopicLabel: 'Tema de búsqueda',
+                searchTopicPlaceholder: 'Ingresa el tema de búsqueda',
+                videos: 'Videos',
+                livestreams: 'En vivo',
+                videoLength: 'Duración del video',
+                durAny: 'Cualquiera',
+                durShort: 'Corto',
+                durMedium: 'Medio',
+                durLong: 'Largo',
+                filterByDate: 'Filtrar por fecha',
+                off: 'Off',
+                on: 'On',
+                dateNotice: '📅 El filtro de fecha busca solo videos — las transmisiones en vivo no están disponibles.',
+                singleDay: 'Un día',
+                dateRange: 'Rango de fechas',
+                year: 'Año:',
+                noDateSelected: 'Sin fecha seleccionada',
+                noRangeSelected: 'Sin rango seleccionado',
+                rangeFrom: 'Desde:',
+                hourFilterLabel: 'Filtro de hora (tu zona horaria local — convertido a UTC)',
+                start: 'Inicio',
+                end: 'Fin',
+                clear: 'Limpiar',
+                filterShorts: 'Filtrar Shorts',
+                filterShortsDesc: 'Bloquea videos con etiquetas',
+                findMostRecent: 'Encontrar más recientes',
+                search: 'Buscar',
+                searching: 'Buscando...',
+                filteringShorts: 'Filtrando Shorts...',
+                noResults: 'No se encontraron resultados',
+                noResultsAfterFilter: 'Sin resultados tras filtrar Shorts',
+                found: 'Encontrados',
+                result: 'resultado',
+                results: 'resultados',
+                shortsBlocked: '(Shorts bloqueados)',
+                invalidKey: 'Clave API inválida o cuota excedida',
+                searchFailed: 'Búsqueda fallida – verifica tu clave API y conexión',
+                enterApiKey: 'Por favor ingresa tu clave API',
+                enterTopic: 'Por favor ingresa un tema de búsqueda',
+                selectDate: 'Por favor selecciona una fecha en el calendario',
+                selectRange: 'Por favor selecciona una fecha de inicio y fin',
+                rangePickStart: 'Haz clic en un día para la fecha de inicio',
+                rangePickEnd: 'Ahora haz clic en un día para la fecha de fin',
+                rangeSelected: 'Rango seleccionado — haz clic en un día para reiniciar',
+                lang: 'Idioma',
+                theme: 'Tema',
+                months: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+                days: ['DO','LU','MA','MI','JU','VI','SA'],
+                langSwitched: 'Idioma: Español',
+            },
+            zh: {
+                name: '中文',
+                flag: '🇨🇳',
+                dir: 'ltr',
+                title: 'YouTube 搜索工具',
+                apiKeyLabel: 'YouTube API 密钥',
+                showHide: '显示/隐藏',
+                apiKeyPlaceholder: '在此粘贴您的 YouTube API 密钥',
+                howToGetKey: '如何获取 API 密钥',
+                step1: '前往',
+                step2: '创建新项目或选择现有项目',
+                step3: '点击左上角 <strong style="color:#e5e5e5;">☰ 导航菜单</strong>',
+                step4: '前往 <strong style="color:#e5e5e5;">API 和服务 → 库</strong>',
+                step5: '搜索并点击 <strong style="color:#e5e5e5;">YouTube Data API v3</strong>',
+                step6: '点击 <strong style="color:#e5e5e5;">启用</strong>',
+                step7: '再次打开 <strong style="color:#e5e5e5;">☰ 导航菜单</strong> 并前往 <strong style="color:#e5e5e5;">API 和服务 → 凭据</strong>',
+                step8: '点击 <strong style="color:#e5e5e5;">创建凭据 → API 密钥</strong>',
+                step9: '复制密钥并粘贴到上方',
+                quotaNote: '<strong>配额：</strong>免费层 = 每天 10,000 单位 &nbsp;·&nbsp; 每次搜索 ≈ 100 单位',
+                watchTutorial: '观看视频教程',
+                searchTopicLabel: '搜索主题',
+                searchTopicPlaceholder: '输入搜索主题',
+                videos: '视频',
+                livestreams: '直播',
+                videoLength: '视频时长',
+                durAny: '任意',
+                durShort: '短片',
+                durMedium: '中等',
+                durLong: '长视频',
+                filterByDate: '按日期筛选',
+                off: '关',
+                on: '开',
+                dateNotice: '📅 日期筛选仅搜索视频 — 此选项不支持直播。',
+                singleDay: '单日',
+                dateRange: '日期范围',
+                year: '年份：',
+                noDateSelected: '未选择日期',
+                noRangeSelected: '未选择范围',
+                rangeFrom: '从：',
+                hourFilterLabel: '小时筛选（您的本地时区 — 自动转换为 UTC）',
+                start: '开始',
+                end: '结束',
+                clear: '清除',
+                filterShorts: '过滤 Shorts',
+                filterShortsDesc: '屏蔽带标签的视频',
+                findMostRecent: '查找最新',
+                search: '搜索',
+                searching: '搜索中...',
+                filteringShorts: '过滤 Shorts...',
+                noResults: '未找到符合条件的结果',
+                noResultsAfterFilter: '过滤 Shorts 后无结果',
+                found: '找到',
+                result: '个结果',
+                results: '个结果',
+                shortsBlocked: '（已屏蔽 Shorts）',
+                invalidKey: 'API 密钥无效或配额已超',
+                searchFailed: '搜索失败 – 请检查您的 API 密钥和连接',
+                enterApiKey: '请输入您的 API 密钥',
+                enterTopic: '请输入搜索主题',
+                selectDate: '请在日历中选择日期',
+                selectRange: '请选择开始和结束日期',
+                rangePickStart: '点击一天设置开始日期',
+                rangePickEnd: '现在点击一天设置结束日期',
+                rangeSelected: '已选择范围 — 点击新日期重置',
+                lang: '语言',
+                theme: '主题',
+                months: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+                days: ['日','一','二','三','四','五','六'],
+                langSwitched: '语言：中文',
+            },
+            hi: {
+                name: 'हिन्दी',
+                flag: '🇮🇳',
+                dir: 'ltr',
+                title: 'YouTube सर्च टूल',
+                apiKeyLabel: 'YouTube API कुंजी',
+                showHide: 'दिखाएं/छुपाएं',
+                apiKeyPlaceholder: 'अपनी YouTube API कुंजी यहाँ पेस्ट करें',
+                howToGetKey: 'API कुंजी कैसे प्राप्त करें',
+                step1: 'जाएं',
+                step2: 'नया प्रोजेक्ट बनाएं या मौजूदा चुनें',
+                step3: '<strong style="color:#e5e5e5;">☰ नेविगेशन मेनू</strong> पर क्लिक करें (ऊपर बाएं)',
+                step4: '<strong style="color:#e5e5e5;">APIs और Services → लाइब्रेरी</strong> पर जाएं',
+                step5: '<strong style="color:#e5e5e5;">YouTube Data API v3</strong> खोजें और क्लिक करें',
+                step6: '<strong style="color:#e5e5e5;">सक्षम करें</strong> पर क्लिक करें',
+                step7: '<strong style="color:#e5e5e5;">☰ नेविगेशन मेनू</strong> फिर खोलें और <strong style="color:#e5e5e5;">APIs और Services → क्रेडेंशियल</strong> पर जाएं',
+                step8: '<strong style="color:#e5e5e5;">क्रेडेंशियल बनाएं → API कुंजी</strong> पर क्लिक करें',
+                step9: 'अपनी कुंजी कॉपी करें और ऊपर पेस्ट करें',
+                quotaNote: '<strong>कोटा:</strong> निःशुल्क स्तर = 10,000 यूनिट/दिन &nbsp;·&nbsp; प्रत्येक खोज ≈ 100 यूनिट',
+                watchTutorial: 'वीडियो ट्यूटोरियल देखें',
+                searchTopicLabel: 'खोज विषय',
+                searchTopicPlaceholder: 'खोज विषय दर्ज करें',
+                videos: 'वीडियो',
+                livestreams: 'लाइवस्ट्रीम',
+                videoLength: 'वीडियो लंबाई',
+                durAny: 'कोई भी',
+                durShort: 'छोटा',
+                durMedium: 'मध्यम',
+                durLong: 'लंबा',
+                filterByDate: 'तारीख से फ़िल्टर',
+                off: 'बंद',
+                on: 'चालू',
+                dateNotice: '📅 तारीख फ़िल्टर केवल वीडियो खोजता है — लाइवस्ट्रीम उपलब्ध नहीं।',
+                singleDay: 'एक दिन',
+                dateRange: 'तारीख सीमा',
+                year: 'वर्ष:',
+                noDateSelected: 'कोई तारीख नहीं चुनी',
+                noRangeSelected: 'कोई सीमा नहीं चुनी',
+                rangeFrom: 'से:',
+                hourFilterLabel: 'घंटे का फ़िल्टर (आपका स्थानीय समय क्षेत्र — UTC में)',
+                start: 'शुरू',
+                end: 'अंत',
+                clear: 'साफ़ करें',
+                filterShorts: 'Shorts फ़िल्टर करें',
+                filterShortsDesc: 'टैग वाले वीडियो ब्लॉक करें',
+                findMostRecent: 'सबसे नए खोजें',
+                search: 'खोजें',
+                searching: 'खोज रहे हैं...',
+                filteringShorts: 'Shorts फ़िल्टर हो रहे हैं...',
+                noResults: 'चुने गए मानदंडों के लिए कोई परिणाम नहीं',
+                noResultsAfterFilter: 'Shorts फ़िल्टर के बाद कोई परिणाम नहीं',
+                found: 'मिले',
+                result: 'परिणाम',
+                results: 'परिणाम',
+                shortsBlocked: '(Shorts अवरुद्ध)',
+                invalidKey: 'अमान्य API कुंजी या कोटा समाप्त',
+                searchFailed: 'खोज विफल – API कुंजी और कनेक्शन जांचें',
+                enterApiKey: 'कृपया अपनी API कुंजी दर्ज करें',
+                enterTopic: 'कृपया खोज विषय दर्ज करें',
+                selectDate: 'कृपया कैलेंडर पर तारीख चुनें',
+                selectRange: 'कृपया प्रारंभ और समाप्ति तारीख चुनें',
+                rangePickStart: 'प्रारंभ तारीख सेट करने के लिए एक दिन क्लिक करें',
+                rangePickEnd: 'अब समाप्ति तारीख के लिए एक दिन क्लिक करें',
+                rangeSelected: 'सीमा चुनी गई — रीसेट करने के लिए नया दिन क्लिक करें',
+                lang: 'भाषा',
+                theme: 'थीम',
+                months: ['जनवरी','फ़रवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'],
+                days: ['र','सो','मं','बु','गु','शु','श'],
+                langSwitched: 'भाषा: हिन्दी',
+            },
+            ar: {
+                name: 'العربية',
+                flag: '🇸🇦',
+                dir: 'rtl',
+                title: 'أداة البحث في يوتيوب',
+                apiKeyLabel: 'مفتاح YouTube API',
+                showHide: 'إظهار/إخفاء',
+                apiKeyPlaceholder: 'الصق مفتاح API الخاص بك هنا',
+                howToGetKey: 'كيفية الحصول على مفتاح API',
+                step1: 'اذهب إلى',
+                step2: 'أنشئ مشروعًا جديدًا أو اختر مشروعًا موجودًا',
+                step3: 'انقر على <strong style="color:#e5e5e5;">☰ قائمة التنقل</strong> (أعلى اليسار)',
+                step4: 'اذهب إلى <strong style="color:#e5e5e5;">APIs والخدمات → المكتبة</strong>',
+                step5: 'ابحث عن <strong style="color:#e5e5e5;">YouTube Data API v3</strong> وانقر عليه',
+                step6: 'انقر على <strong style="color:#e5e5e5;">تفعيل</strong>',
+                step7: 'افتح <strong style="color:#e5e5e5;">☰ قائمة التنقل</strong> مجددًا وانتقل إلى <strong style="color:#e5e5e5;">APIs والخدمات → بيانات الاعتماد</strong>',
+                step8: 'انقر على <strong style="color:#e5e5e5;">إنشاء بيانات اعتماد → مفتاح API</strong>',
+                step9: 'انسخ مفتاحك والصقه أعلاه',
+                quotaNote: '<strong>الحصة:</strong> المستوى المجاني = 10,000 وحدة/يوم &nbsp;·&nbsp; كل بحث ≈ 100 وحدة',
+                watchTutorial: 'شاهد الدرس التعليمي',
+                searchTopicLabel: 'موضوع البحث',
+                searchTopicPlaceholder: 'أدخل موضوع البحث',
+                videos: 'مقاطع الفيديو',
+                livestreams: 'البث المباشر',
+                videoLength: 'مدة الفيديو',
+                durAny: 'أي مدة',
+                durShort: 'قصير',
+                durMedium: 'متوسط',
+                durLong: 'طويل',
+                filterByDate: 'تصفية حسب التاريخ',
+                off: 'إيقاف',
+                on: 'تشغيل',
+                dateNotice: '📅 تصفية التاريخ تبحث في مقاطع الفيديو فقط — البث المباشر غير متاح.',
+                singleDay: 'يوم واحد',
+                dateRange: 'نطاق التاريخ',
+                year: 'السنة:',
+                noDateSelected: 'لم يتم اختيار تاريخ',
+                noRangeSelected: 'لم يتم اختيار نطاق',
+                rangeFrom: 'من:',
+                hourFilterLabel: 'فلتر الساعة (منطقتك الزمنية المحلية — يتم التحويل إلى UTC)',
+                start: 'البداية',
+                end: 'النهاية',
+                clear: 'مسح',
+                filterShorts: 'تصفية Shorts',
+                filterShortsDesc: 'حجب الفيديوهات ذات العلامات',
+                findMostRecent: 'البحث عن الأحدث',
+                search: 'بحث',
+                searching: 'جارٍ البحث...',
+                filteringShorts: 'تصفية Shorts...',
+                noResults: 'لا توجد نتائج للمعايير المختارة',
+                noResultsAfterFilter: 'لا توجد نتائج بعد تصفية Shorts',
+                found: 'وُجد',
+                result: 'نتيجة',
+                results: 'نتائج',
+                shortsBlocked: '(تم حجب Shorts)',
+                invalidKey: 'مفتاح API غير صالح أو تجاوز الحصة',
+                searchFailed: 'فشل البحث – تحقق من مفتاح API والاتصال',
+                enterApiKey: 'الرجاء إدخال مفتاح API',
+                enterTopic: 'الرجاء إدخال موضوع البحث',
+                selectDate: 'الرجاء اختيار تاريخ في التقويم',
+                selectRange: 'الرجاء اختيار تاريخ البداية والنهاية',
+                rangePickStart: 'انقر على يوم لتحديد تاريخ البداية',
+                rangePickEnd: 'الآن انقر على يوم لتحديد تاريخ النهاية',
+                rangeSelected: 'تم اختيار النطاق — انقر على يوم جديد للإعادة',
+                lang: 'اللغة',
+                theme: 'المظهر',
+                months: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
+                days: ['أح','إث','ثل','أر','خم','جم','سب'],
+                langSwitched: 'اللغة: العربية',
+            },
+            pt: {
+                name: 'Português',
+                flag: '🇧🇷',
+                dir: 'ltr',
+                title: 'Ferramenta de Busca YouTube',
+                apiKeyLabel: 'Chave API do YouTube',
+                showHide: 'mostrar/ocultar',
+                apiKeyPlaceholder: 'Cole sua chave API aqui',
+                howToGetKey: 'Como Obter uma Chave API',
+                step1: 'Acesse',
+                step2: 'Crie um novo projeto ou selecione um existente',
+                step3: 'Clique no <strong style="color:#e5e5e5;">☰ Menu de Navegação</strong> (canto superior esquerdo)',
+                step4: 'Vá para <strong style="color:#e5e5e5;">APIs e Serviços → Biblioteca</strong>',
+                step5: 'Pesquise e clique em <strong style="color:#e5e5e5;">YouTube Data API v3</strong>',
+                step6: 'Clique em <strong style="color:#e5e5e5;">Ativar</strong>',
+                step7: 'Abra o <strong style="color:#e5e5e5;">☰ Menu de Navegação</strong> novamente e vá para <strong style="color:#e5e5e5;">APIs e Serviços → Credenciais</strong>',
+                step8: 'Clique em <strong style="color:#e5e5e5;">Criar Credenciais → Chave API</strong>',
+                step9: 'Copie sua chave e cole acima',
+                quotaNote: '<strong>Cota:</strong> Nível gratuito = 10.000 unidades/dia &nbsp;·&nbsp; Cada busca ≈ 100 unidades',
+                watchTutorial: 'Assistir tutorial em vídeo',
+                searchTopicLabel: 'Tema de Pesquisa',
+                searchTopicPlaceholder: 'Digite o tema de pesquisa',
+                videos: 'Vídeos',
+                livestreams: 'Ao vivo',
+                videoLength: 'Duração do Vídeo',
+                durAny: 'Qualquer',
+                durShort: 'Curto',
+                durMedium: 'Médio',
+                durLong: 'Longo',
+                filterByDate: 'Filtrar por Data',
+                off: 'Off',
+                on: 'On',
+                dateNotice: '📅 O filtro de data busca apenas vídeos — transmissões ao vivo não estão disponíveis.',
+                singleDay: 'Um Dia',
+                dateRange: 'Intervalo de Datas',
+                year: 'Ano:',
+                noDateSelected: 'Nenhuma data selecionada',
+                noRangeSelected: 'Nenhum intervalo selecionado',
+                rangeFrom: 'De:',
+                hourFilterLabel: 'Filtro de Hora (seu fuso horário local — convertido para UTC)',
+                start: 'Início',
+                end: 'Fim',
+                clear: 'Limpar',
+                filterShorts: 'Filtrar Shorts',
+                filterShortsDesc: 'Bloqueia vídeos com tags',
+                findMostRecent: 'Encontrar Mais Recentes',
+                search: 'Buscar',
+                searching: 'Buscando...',
+                filteringShorts: 'Filtrando Shorts...',
+                noResults: 'Nenhum resultado encontrado',
+                noResultsAfterFilter: 'Sem resultados após filtrar Shorts',
+                found: 'Encontrados',
+                result: 'resultado',
+                results: 'resultados',
+                shortsBlocked: '(Shorts bloqueados)',
+                invalidKey: 'Chave API inválida ou cota excedida',
+                searchFailed: 'Busca falhou – verifique sua chave API e conexão',
+                enterApiKey: 'Por favor insira sua chave API',
+                enterTopic: 'Por favor insira um tema de pesquisa',
+                selectDate: 'Por favor selecione uma data no calendário',
+                selectRange: 'Por favor selecione datas de início e fim',
+                rangePickStart: 'Clique em um dia para definir a data de início',
+                rangePickEnd: 'Agora clique em um dia para definir a data de fim',
+                rangeSelected: 'Intervalo selecionado — clique em um novo dia para redefinir',
+                lang: 'Idioma',
+                theme: 'Tema',
+                months: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                days: ['DO','SE','TE','QU','QU','SE','SÁ'],
+                langSwitched: 'Idioma: Português',
+            },
+            fr: {
+                name: 'Français',
+                flag: '🇫🇷',
+                dir: 'ltr',
+                title: 'Outil de Recherche YouTube',
+                apiKeyLabel: 'Clé API YouTube',
+                showHide: 'afficher/masquer',
+                apiKeyPlaceholder: 'Collez votre clé API YouTube ici',
+                howToGetKey: 'Comment obtenir une clé API',
+                step1: 'Allez sur',
+                step2: 'Créez un nouveau projet ou sélectionnez-en un existant',
+                step3: 'Cliquez sur le <strong style="color:#e5e5e5;">☰ Menu de navigation</strong> (en haut à gauche)',
+                step4: 'Allez dans <strong style="color:#e5e5e5;">APIs et services → Bibliothèque</strong>',
+                step5: 'Recherchez et cliquez sur <strong style="color:#e5e5e5;">YouTube Data API v3</strong>',
+                step6: 'Cliquez sur <strong style="color:#e5e5e5;">Activer</strong>',
+                step7: 'Rouvrez le <strong style="color:#e5e5e5;">☰ Menu de navigation</strong> et allez dans <strong style="color:#e5e5e5;">APIs et services → Identifiants</strong>',
+                step8: 'Cliquez sur <strong style="color:#e5e5e5;">Créer des identifiants → Clé API</strong>',
+                step9: 'Copiez votre clé et collez-la ci-dessus',
+                quotaNote: '<strong>Quota :</strong> Niveau gratuit = 10 000 unités/jour &nbsp;·&nbsp; Chaque recherche ≈ 100 unités',
+                watchTutorial: 'Voir le tutoriel vidéo',
+                searchTopicLabel: 'Sujet de recherche',
+                searchTopicPlaceholder: 'Entrez le sujet de recherche',
+                videos: 'Vidéos',
+                livestreams: 'En direct',
+                videoLength: 'Durée de la vidéo',
+                durAny: 'Tous',
+                durShort: 'Court',
+                durMedium: 'Moyen',
+                durLong: 'Long',
+                filterByDate: 'Filtrer par date',
+                off: 'Off',
+                on: 'On',
+                dateNotice: '📅 Le filtre de date recherche uniquement des vidéos — les lives ne sont pas disponibles.',
+                singleDay: 'Un jour',
+                dateRange: 'Plage de dates',
+                year: 'Année :',
+                noDateSelected: 'Aucune date sélectionnée',
+                noRangeSelected: 'Aucune plage sélectionnée',
+                rangeFrom: 'Du :',
+                hourFilterLabel: 'Filtre horaire (votre fuseau horaire local — converti en UTC)',
+                start: 'Début',
+                end: 'Fin',
+                clear: 'Effacer',
+                filterShorts: 'Filtrer les Shorts',
+                filterShortsDesc: 'Bloque les vidéos avec des tags',
+                findMostRecent: 'Trouver les plus récents',
+                search: 'Rechercher',
+                searching: 'Recherche en cours...',
+                filteringShorts: 'Filtrage des Shorts...',
+                noResults: 'Aucun résultat pour les critères sélectionnés',
+                noResultsAfterFilter: 'Aucun résultat après filtrage des Shorts',
+                found: 'Trouvés',
+                result: 'résultat',
+                results: 'résultats',
+                shortsBlocked: '(Shorts bloqués)',
+                invalidKey: 'Clé API invalide ou quota dépassé',
+                searchFailed: 'Recherche échouée – vérifiez votre clé API et votre connexion',
+                enterApiKey: 'Veuillez saisir votre clé API',
+                enterTopic: 'Veuillez saisir un sujet de recherche',
+                selectDate: 'Veuillez sélectionner une date sur le calendrier',
+                selectRange: 'Veuillez sélectionner une date de début et de fin',
+                rangePickStart: 'Cliquez sur un jour pour définir la date de début',
+                rangePickEnd: 'Cliquez maintenant sur un jour pour définir la date de fin',
+                rangeSelected: 'Plage sélectionnée — cliquez sur un nouveau jour pour réinitialiser',
+                lang: 'Langue',
+                theme: 'Thème',
+                months: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
+                days: ['DI','LU','MA','ME','JE','VE','SA'],
+                langSwitched: 'Langue : Français',
+            },
+            ja: {
+                name: '日本語',
+                flag: '🇯🇵',
+                dir: 'ltr',
+                title: 'YouTube 検索ツール',
+                apiKeyLabel: 'YouTube API キー',
+                showHide: '表示/非表示',
+                apiKeyPlaceholder: 'YouTube API キーをここに貼り付け',
+                howToGetKey: 'API キーの取得方法',
+                step1: 'アクセス',
+                step2: '新しいプロジェクトを作成するか、既存のものを選択',
+                step3: '左上の <strong style="color:#e5e5e5;">☰ ナビゲーションメニュー</strong> をクリック',
+                step4: '<strong style="color:#e5e5e5;">API とサービス → ライブラリ</strong> へ移動',
+                step5: '<strong style="color:#e5e5e5;">YouTube Data API v3</strong> を検索してクリック',
+                step6: '<strong style="color:#e5e5e5;">有効にする</strong> をクリック',
+                step7: '再度 <strong style="color:#e5e5e5;">☰ ナビゲーションメニュー</strong> を開き <strong style="color:#e5e5e5;">API とサービス → 認証情報</strong> へ移動',
+                step8: '<strong style="color:#e5e5e5;">認証情報を作成 → API キー</strong> をクリック',
+                step9: 'キーをコピーして上に貼り付け',
+                quotaNote: '<strong>割り当て：</strong>無料枠 = 10,000 ユニット/日 &nbsp;·&nbsp; 検索 1 回 ≈ 100 ユニット',
+                watchTutorial: 'ビデオチュートリアルを見る',
+                searchTopicLabel: '検索トピック',
+                searchTopicPlaceholder: '検索トピックを入力',
+                videos: '動画',
+                livestreams: 'ライブ配信',
+                videoLength: '動画の長さ',
+                durAny: 'すべて',
+                durShort: '短い',
+                durMedium: '中程度',
+                durLong: '長い',
+                filterByDate: '日付でフィルター',
+                off: 'オフ',
+                on: 'オン',
+                dateNotice: '📅 日付フィルターは動画のみ検索します — ライブストリームは対象外です。',
+                singleDay: '1日',
+                dateRange: '日付範囲',
+                year: '年：',
+                noDateSelected: '日付未選択',
+                noRangeSelected: '範囲未選択',
+                rangeFrom: '開始：',
+                hourFilterLabel: '時間フィルター（ローカルタイムゾーン — UTC に自動変換）',
+                start: '開始',
+                end: '終了',
+                clear: 'クリア',
+                filterShorts: 'ショートをフィルター',
+                filterShortsDesc: 'タグ付き動画をブロック',
+                findMostRecent: '最新を検索',
+                search: '検索',
+                searching: '検索中...',
+                filteringShorts: 'ショートをフィルター中...',
+                noResults: '選択した条件の結果が見つかりません',
+                noResultsAfterFilter: 'ショートフィルター後に結果なし',
+                found: '見つかりました',
+                result: '件',
+                results: '件',
+                shortsBlocked: '（ショートをブロック済み）',
+                invalidKey: 'APIキーが無効またはクォータ超過',
+                searchFailed: '検索失敗 – APIキーと接続を確認してください',
+                enterApiKey: 'APIキーを入力してください',
+                enterTopic: '検索トピックを入力してください',
+                selectDate: 'カレンダーで日付を選択してください',
+                selectRange: '開始日と終了日を選択してください',
+                rangePickStart: '開始日を設定するには日付をクリック',
+                rangePickEnd: '次に終了日を設定するには日付をクリック',
+                rangeSelected: '範囲選択済み — リセットするには新しい日付をクリック',
+                lang: '言語',
+                theme: 'テーマ',
+                months: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+                days: ['日','月','火','水','木','金','土'],
+                langSwitched: '言語：日本語',
+            },
+        };
+
+        const LANG_CODES = ['en','es','zh','hi','ar','pt','fr','ja'];
+        let currentLang = 'en';
+
+        function detectBrowserLang() {
+            const nav = navigator.language || navigator.userLanguage || 'en';
+            const base = nav.split('-')[0].toLowerCase();
+            return LANG_CODES.includes(base) ? base : 'en';
+        }
+
+        function t(key) {
+            return TRANSLATIONS[currentLang][key] || TRANSLATIONS['en'][key] || key;
+        }
+
+        function applyLang(code) {
+            if (!TRANSLATIONS[code]) return;
+            currentLang = code;
+            localStorage.setItem('youtube_lang', code);
+
+            const tr = TRANSLATIONS[code];
+            document.documentElement.lang = code;
+            document.documentElement.dir  = tr.dir;
+
+            // Update all data-i18n text nodes
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (tr[key] !== undefined) {
+                    if (key.startsWith('step') || key === 'quotaNote' || key === 'dateNotice') {
+                        el.innerHTML = tr[key];
+                    } else {
+                        el.textContent = tr[key];
+                    }
+                }
+            });
+
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (tr[key] !== undefined) el.placeholder = tr[key];
+            });
+
+            // Re-render calendar (months/days change)
+            renderCalendar();
+            updateSelectedDisplay();
+            updateRangeHint();
+            updateButtonLabel();
+            if (document.getElementById('dateFilterToggle').checked) {
+                document.getElementById('dateFilterLabel').textContent = t('on');
+            } else {
+                document.getElementById('dateFilterLabel').textContent = t('off');
+            }
+
+            // Update lang panel active
+            document.querySelectorAll('.lang-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', LANG_CODES[i] === code);
+            });
+
+            // Toast
+            showLangToast(tr.langSwitched);
+        }
+
+        let toastTimer = null;
+        function showLangToast(msg) {
+            const toast = document.getElementById('langToast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function buildLangPanel() {
+            const panel = document.getElementById('langPanel');
+            LANG_CODES.forEach((code, i) => {
+                const tr = TRANSLATIONS[code];
+                const btn = document.createElement('div');
+                btn.className = 'lang-btn' + (code === currentLang ? ' active' : '');
+                btn.textContent = tr.flag;
+                btn.title = tr.name;
+                btn.setAttribute('data-tooltip', tr.name);
+                btn.addEventListener('click', () => applyLang(code));
+                panel.appendChild(btn);
+            });
+        }
+
+        // ══════════════════════════════════════════════════
+        //  THEMES
+        // ══════════════════════════════════════════════════
         const THEMES = [
             { name: 'Purple',   accent: '#8b5cf6', light: '#a78bfa', dark: '#6d28d9', bg: '#2e1f5e', bg2: '#1a0f35', dim: '#4c3a7a', tint: '#c4b5fd' },
             { name: 'Cyan',     accent: '#06b6d4', light: '#67e8f9', dark: '#0891b2', bg: '#0e3344', bg2: '#051c26', dim: '#1a5568', tint: '#a5f3fc' },
@@ -877,15 +1620,15 @@
         let activeThemeIndex = 0;
 
         function applyTheme(index) {
-            const t = THEMES[index];
-            const r = document.documentElement.style;
-            r.setProperty('--accent',       t.accent);
-            r.setProperty('--accent-light', t.light);
-            r.setProperty('--accent-dark',  t.dark);
-            r.setProperty('--accent-bg',    t.bg);
-            r.setProperty('--accent-bg2',   t.bg2);
-            r.setProperty('--accent-dim',   t.dim);
-            r.setProperty('--accent-tint',  t.tint);
+            const th = THEMES[index];
+            const r  = document.documentElement.style;
+            r.setProperty('--accent',       th.accent);
+            r.setProperty('--accent-light', th.light);
+            r.setProperty('--accent-dark',  th.dark);
+            r.setProperty('--accent-bg',    th.bg);
+            r.setProperty('--accent-bg2',   th.bg2);
+            r.setProperty('--accent-dim',   th.dim);
+            r.setProperty('--accent-tint',  th.tint);
             activeThemeIndex = index;
             localStorage.setItem('youtube_theme', index);
             document.querySelectorAll('.swatch').forEach((s, i) => {
@@ -895,25 +1638,28 @@
 
         function buildThemePanel() {
             const panel = document.getElementById('themePanel');
-            THEMES.forEach((t, i) => {
+            THEMES.forEach((th, i) => {
                 const sw = document.createElement('div');
-                sw.className   = 'swatch' + (i === 0 ? ' active' : '');
-                sw.style.background = t.accent;
-                sw.title       = t.name;
+                sw.className        = 'swatch' + (i === 0 ? ' active' : '');
+                sw.style.background = th.accent;
+                sw.title            = th.name;
                 sw.addEventListener('click', () => applyTheme(i));
                 panel.appendChild(sw);
             });
         }
 
-        let currentMode  = 'videos';
-        let showApiKey   = false;
-        let dateEnabled  = false;
-        let dateMode     = 'single';
-
-        let selectedDate = null;
-        let rangeStart   = null;
-        let rangeEnd     = null;
-        let rangePicking = 'start';
+        // ══════════════════════════════════════════════════
+        //  APP STATE
+        // ══════════════════════════════════════════════════
+        let currentMode     = 'videos';
+        let showApiKey      = false;
+        let dateEnabled     = false;
+        let dateMode        = 'single';
+        let selectedDate    = null;
+        let rangeStart      = null;
+        let rangeEnd        = null;
+        let rangePicking    = 'start';
+        let currentDuration = 'any';
 
         const today = new Date();
         let calYear  = today.getFullYear();
@@ -949,11 +1695,22 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('youtube_api_key');
-            if (saved) document.getElementById('apiKey').value = saved;
+            const savedKey = localStorage.getItem('youtube_api_key');
+            if (savedKey) document.getElementById('apiKey').value = savedKey;
+
+            // Language: saved → browser → 'en'
+            const savedLang = localStorage.getItem('youtube_lang');
+            currentLang = savedLang || detectBrowserLang();
+
+            buildLangPanel();
             buildThemePanel();
+
             const savedTheme = localStorage.getItem('youtube_theme');
             if (savedTheme !== null) applyTheme(parseInt(savedTheme));
+
+            // Apply lang after panels built (so lang btn active state sets correctly)
+            if (currentLang !== 'en') applyLang(currentLang);
+
             createParticles();
             populateYearSelect();
             renderCalendar();
@@ -962,6 +1719,9 @@
             });
         });
 
+        // ══════════════════════════════════════════════════
+        //  UI HELPERS
+        // ══════════════════════════════════════════════════
         function toggleApiKeyVisibility() {
             showApiKey = !showApiKey;
             document.getElementById('apiKey').type = showApiKey ? 'text' : 'password';
@@ -973,8 +1733,6 @@
             const open     = dropdown.classList.toggle('visible');
             toggle.classList.toggle('open', open);
         }
-
-        let currentDuration = 'any';
 
         function setMode(mode) {
             if (mode === 'livestreams' && dateEnabled) return;
@@ -998,7 +1756,7 @@
             const lsBtn = document.getElementById('livestreamsBtn');
 
             body.classList.toggle('visible', dateEnabled);
-            lbl.textContent = dateEnabled ? 'On' : 'Off';
+            lbl.textContent = dateEnabled ? t('on') : t('off');
             lbl.style.color = dateEnabled ? 'var(--accent)' : '#555';
 
             if (dateEnabled) {
@@ -1030,10 +1788,10 @@
 
         function isBetween(d, s, e) {
             if (!s || !e) return false;
-            const t  = d.getTime();
+            const t2 = d.getTime();
             const lo = Math.min(s.getTime(), e.getTime());
             const hi = Math.max(s.getTime(), e.getTime());
-            return t > lo && t < hi;
+            return t2 > lo && t2 < hi;
         }
 
         function isFuture(d) {
@@ -1042,14 +1800,14 @@
         }
 
         function renderCalendar() {
-            const months = ['January','February','March','April','May','June',
-                            'July','August','September','October','November','December'];
+            const months = t('months');
             document.getElementById('calMonthYear').textContent = months[calMonth] + ' ' + calYear;
 
             const grid = document.getElementById('calGrid');
             grid.innerHTML = '';
 
-            ['SU','MO','TU','WE','TH','FR','SA'].forEach(d => {
+            const dayNames = t('days');
+            dayNames.forEach(d => {
                 const el = document.createElement('div');
                 el.className   = 'cal-day-name';
                 el.textContent = d;
@@ -1143,18 +1901,19 @@
 
         function formatDate(d) {
             if (!d) return '—';
-            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const months = t('months');
+            return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
         }
 
         function updateSelectedDisplay() {
             const el = document.getElementById('selectedDatesDisplay');
             if (dateMode === 'single') {
-                el.textContent = selectedDate ? formatDate(selectedDate) : 'No date selected';
+                el.textContent = selectedDate ? formatDate(selectedDate) : t('noDateSelected');
             } else {
                 if (!rangeStart && !rangeEnd) {
-                    el.textContent = 'No range selected';
+                    el.textContent = t('noRangeSelected');
                 } else if (rangeStart && !rangeEnd) {
-                    el.textContent = `From: ${formatDate(rangeStart)}`;
+                    el.textContent = `${t('rangeFrom')} ${formatDate(rangeStart)}`;
                 } else {
                     const s = rangeStart < rangeEnd ? rangeStart : rangeEnd;
                     const e = rangeStart < rangeEnd ? rangeEnd   : rangeStart;
@@ -1167,20 +1926,20 @@
             const el = document.getElementById('rangeHint');
             if (dateMode !== 'range') { el.textContent = ''; return; }
             if (rangePicking === 'start' && !rangeStart) {
-                el.textContent = 'Click a day to set the start date';
+                el.textContent = t('rangePickStart');
                 el.className   = 'range-hint';
             } else if (rangePicking === 'end') {
-                el.textContent = 'Now click a day to set the end date';
+                el.textContent = t('rangePickEnd');
                 el.className   = 'range-hint picking-end';
             } else {
-                el.textContent = 'Range selected — click a new day to reset';
+                el.textContent = t('rangeSelected');
                 el.className   = 'range-hint';
             }
         }
 
         function updateHourFilterVisibility() {
-            const sec  = document.getElementById('hourFilterSection');
-            let show   = dateEnabled;
+            const sec = document.getElementById('hourFilterSection');
+            let show  = dateEnabled;
             if (dateMode === 'single') {
                 show = show && selectedDate !== null;
             } else {
@@ -1191,7 +1950,7 @@
 
         function updateButtonLabel() {
             document.getElementById('searchBtn').textContent =
-                dateEnabled ? 'Search' : 'Find Most Recent';
+                dateEnabled ? t('search') : t('findMostRecent');
         }
 
         function setStatus(msg, type = 'info') {
@@ -1209,33 +1968,25 @@
                 const minutes = Math.floor(seconds / 60);
                 if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
                 const hours = Math.floor(minutes / 60);
-                if (hours < 24)   return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+                if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
                 const days = Math.floor(hours / 24);
                 return days === 1 ? '1 day ago' : `${days} days ago`;
             } catch { return '?'; }
-        }
-
-        function parseDuration(iso) {
-            const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-            if (!match) return 0;
-            return parseInt(match[1] || 0) * 3600
-                 + parseInt(match[2] || 0) * 60
-                 + parseInt(match[3] || 0);
         }
 
         async function searchYouTube() {
             const apiKey = document.getElementById('apiKey').value.trim();
             const query  = document.getElementById('searchQuery').value.trim();
 
-            if (!apiKey) { setStatus('Please enter your API key', 'error'); return; }
-            if (!query)  { setStatus('Please enter a search topic', 'error'); return; }
+            if (!apiKey) { setStatus(t('enterApiKey'), 'error'); return; }
+            if (!query)  { setStatus(t('enterTopic'),  'error'); return; }
 
             if (dateEnabled) {
                 if (dateMode === 'single' && !selectedDate) {
-                    setStatus('Please select a date on the calendar', 'error'); return;
+                    setStatus(t('selectDate'), 'error'); return;
                 }
                 if (dateMode === 'range' && (!rangeStart || !rangeEnd)) {
-                    setStatus('Please select both a start and end date', 'error'); return;
+                    setStatus(t('selectRange'), 'error'); return;
                 }
             }
 
@@ -1243,20 +1994,15 @@
 
             const btn = document.getElementById('searchBtn');
             btn.disabled    = true;
-            btn.textContent = 'Searching...';
-            setStatus('Searching...', 'info');
+            btn.textContent = t('searching');
+            setStatus(t('searching'), 'info');
             document.getElementById('results').innerHTML = '';
 
             try {
                 let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&order=date&maxResults=50&key=${apiKey}`;
 
-                if (!dateEnabled && currentMode === 'livestreams') {
-                    url += '&eventType=live';
-                }
-
-                if (currentMode === 'videos' && currentDuration !== 'any') {
-                    url += `&videoDuration=${currentDuration}`;
-                }
+                if (!dateEnabled && currentMode === 'livestreams') url += '&eventType=live';
+                if (currentMode === 'videos' && currentDuration !== 'any') url += `&videoDuration=${currentDuration}`;
 
                 if (dateEnabled) {
                     let startBase, endBase;
@@ -1283,7 +2029,7 @@
                 const data     = await response.json();
 
                 if (data.error) {
-                    setStatus('Invalid API Key or quota exceeded', 'error');
+                    setStatus(t('invalidKey'), 'error');
                     btn.disabled = false;
                     updateButtonLabel();
                     return;
@@ -1292,7 +2038,7 @@
                 let items = (data.items || []).filter(i => i.id.videoId);
 
                 if (items.length === 0) {
-                    setStatus('No results found for the selected criteria', 'info');
+                    setStatus(t('noResults'), 'info');
                     btn.disabled = false;
                     updateButtonLabel();
                     return;
@@ -1300,7 +2046,7 @@
 
                 const noShorts = document.getElementById('filterShorts').checked;
                 if (noShorts) {
-                    setStatus('Filtering Shorts...', 'info');
+                    setStatus(t('filteringShorts'), 'info');
                     items = items.filter(item => {
                         const title       = item.snippet.title       || '';
                         const description = item.snippet.description || '';
@@ -1309,13 +2055,14 @@
                 }
 
                 if (items.length === 0) {
-                    setStatus('No results found after filtering Shorts', 'info');
+                    setStatus(t('noResultsAfterFilter'), 'info');
                     btn.disabled = false;
                     updateButtonLabel();
                     return;
                 }
 
-                setStatus(`Found ${items.length} result${items.length !== 1 ? 's' : ''}${noShorts ? ' (Shorts blocked)' : ''}`, 'success');
+                const count = items.length;
+                setStatus(`${t('found')} ${count} ${count !== 1 ? t('results') : t('result')}${noShorts ? ' ' + t('shortsBlocked') : ''}`, 'success');
 
                 const container = document.getElementById('results');
                 items.forEach(item => {
@@ -1347,7 +2094,7 @@
                 });
 
             } catch (err) {
-                setStatus('Search failed – check your API key and connection', 'error');
+                setStatus(t('searchFailed'), 'error');
                 console.error(err);
             }
 

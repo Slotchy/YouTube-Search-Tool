@@ -1,3 +1,5 @@
+🌐 [Español](README.es.md) · [中文](README.zh.md) · [हिन्दी](README.hi.md) · [العربية](README.ar.md) · [Português](README.pt.md) · [Français](README.fr.md) · [日本語](README.ja.md)
+
 # 📺 YouTube Search Tool
 
 A web-based tool to search YouTube videos and livestreams in true chronological order using your own YouTube API key. No sign-in required — just paste your key and search.

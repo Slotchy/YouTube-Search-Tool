@@ -4,7 +4,8 @@
 
 A web-based tool to search YouTube videos and livestreams in true chronological order using your own YouTube API key. No sign-in required — just paste your key and search.
 
-## **YouTube Search Tool:** https://slotchy.github.io/YouTube-Search-Tool
+## **YouTube Search Tool:** <https://slotchy.github.io/YouTube-Search-Tool>
+## **API Key Tutorial:** <https://www.youtube.com/watch?v=eE5WGiwqlFE>
 
 ---
 
@@ -27,11 +28,23 @@ A web-based tool to search YouTube videos and livestreams in true chronological 
 
 ## 🔑 How to Get a YouTube API Key
 
-1. Go to [console.cloud.google.com](https://console.cloud.google.com)
-2. Create a new project or select an existing one
-3. Enable **YouTube Data API v3**
-4. Navigate to **Credentials → Create Credentials → API Key**
-5. Copy your API key and paste it into the tool
+1. Open a new tab and go to [Gmail](https://mail.google.com) and sign into your Google account
+2. Navigate to [console.cloud.google.com](https://console.cloud.google.com)
+3. When prompted, accept the **Terms of Service** and click **Agree and Continue**
+4. At the top left of the page, click **Select a Project**, then at the top right of that window click **New Project**
+5. Give your project a name and click **Create** — wait for it to finish creating
+6. Open the **Navigation Menu** (the three bars at the top left), scroll down to **APIs & Services**, and click **Library**
+7. Scroll down until you find **YouTube Data API v3** and click on it
+8. Click **Enable** and wait for it to fully activate
+9. On the left-hand side, click **Credentials**
+10. At the top, click **Create Credentials → API Key**, then click **Create**
+11. Once your key is generated, click on the **API Key** to open its settings
+12. Under **API Restrictions**, click **Restrict Key**, then click **Select APIs**
+    - If YouTube Data API v3 doesn't appear right away, refresh the page
+    - Scroll down, select **YouTube Data API v3**, and click **OK**
+13. Click **Save**
+14. Click **Show Key**, then copy your key
+15. Go to the [YouTube Search Tool](https://slotchy.github.io/YouTube-Search-Tool), paste your key, and run a search to confirm it's working
 
 > **Quota:** The free tier provides 10,000 units/day. Each search costs ~100 units (~100 searches/day for free).
 
@@ -64,7 +77,7 @@ A web-based tool to search YouTube videos and livestreams in true chronological 
 ## 🛠️ Technical Details
 
 | Detail | Info |
-|---|---|
+| --- | --- |
 | Stack | Pure HTML, CSS, JavaScript — no frameworks |
 | Backend | None — fully client-side |
 | API | YouTube Data API v3 |

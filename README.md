@@ -21,6 +21,9 @@ A web-based tool to search YouTube videos and livestreams in true chronological 
 * ✨ Animated particle background, pre-filled on load
 * 🕒 Shows time ago for each result
 * 🖱️ Click any result to open the video directly
+* ⭐ Favorite any video with one tap — favorites persist across sessions
+* 📋 Add notes to any video — tap the Notes button on a card to expand a text area, saved automatically
+* 📄 Export your full search session as a `.md` file — includes all results across every search performed, with URLs, thumbnail links, favorites, and notes, all with zero extra API quota
 
 > **Note:** Livestreams mode is disabled when date filtering is active. Video length filter is only available in Videos mode.
 
@@ -61,14 +64,31 @@ A web-based tool to search YouTube videos and livestreams in true chronological 
 7. *(Optional)* If a date is selected, set a **Start** and **End** hour to filter by time of day
 8. Click **Find Most Recent** (or **Search** when date filtering is on)
 9. Click any result card to open the video
-10. Use the color swatches on the right to change the accent theme — remembered between visits
+10. *(Optional)* Click **☆ Favorite** on any card to save it as a favorite
+11. *(Optional)* Click **📋 Notes** on any card to expand a notes area and type a note
+12. Click **Export .MD** (floating button) to download your full session as a Markdown file
+13. Use the color swatches on the right to change the accent theme — remembered between visits
+
+---
+
+## 📄 Export
+
+The export button appears automatically after your first search and accumulates results across your entire session. If you search for "fortnite" and then "soccer", both sets of results are included in the download.
+
+The `.md` file is organized as:
+
+* **⭐ Favorites** — all videos you starred, listed first
+* **📝 Notes** — all videos with notes attached
+* **All Results** — every result grouped by search term, each with title, channel, publish date, URL, and thumbnail link
+
+Favorites and notes persist in your browser across page refreshes via `localStorage`.
 
 ---
 
 ## 🔒 Privacy
 
 * API key stored locally in your browser (`localStorage`) — never sent anywhere except to Google
-* Color theme preference stored locally in your browser
+* Color theme, favorites, and notes stored locally in your browser
 * No backend — all processing happens client-side
 * The only external requests made are to the Google YouTube Data API v3
 
@@ -81,10 +101,11 @@ A web-based tool to search YouTube videos and livestreams in true chronological 
 | Stack | Pure HTML, CSS, JavaScript — no frameworks |
 | Backend | None — fully client-side |
 | API | YouTube Data API v3 |
-| Results | Up to 50, sorted by date |
+| Results | Up to 50 per search, sorted by date |
 | Date filtering | Uses `publishedAfter` / `publishedBefore` API parameters |
 | Duration filtering | Uses `videoDuration` API parameter (`short` / `medium` / `long`) |
 | Shorts filtering | Client-side — removes any result containing `#` in title or description |
 | Theming | CSS custom properties (`var(--accent)`) swapped via JavaScript |
 | Particles | Negative `animation-delay` values so particles pre-populate the screen on load |
-| Storage | `localStorage` for API key and theme preference |
+| Storage | `localStorage` for API key, theme, favorites, and notes |
+| Export | Client-side Blob download — no extra API calls, zero quota cost |

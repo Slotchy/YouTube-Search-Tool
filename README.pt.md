@@ -1,76 +1,96 @@
 🌐 [English](README.md) · [Español](README.es.md) · [中文](README.zh.md) · [हिन्दी](README.hi.md) · [العربية](README.ar.md) · [Français](README.fr.md) · [日本語](README.ja.md)
 
-# 📺 YouTube Search Tool
+# 📺 Ferramenta de Busca YouTube
 
-Uma ferramenta web para pesquisar vídeos e transmissões ao vivo do YouTube em ordem cronológica real usando sua própria chave de API do YouTube. Sem necessidade de login — basta colar sua chave e pesquisar.
+Uma ferramenta web para buscar vídeos e transmissões ao vivo do YouTube em ordem cronológica real usando sua própria chave API. Sem necessidade de login — basta colar sua chave e buscar.
 
-## **YouTube Search Tool:** <https://slotchy.github.io/YouTube-Search-Tool>
-## **Tutorial de Chave de API:** <https://www.youtube.com/watch?v=eE5WGiwqlFE>
+## **Ferramenta de Busca YouTube:** <https://slotchy.github.io/YouTube-Search-Tool>
+## **Tutorial de Chave API:** <https://www.youtube.com/watch?v=eE5WGiwqlFE>
 
 ---
 
-## ✨ Funcionalidades
+## ✨ Recursos
 
-* 🔍 Pesquise vídeos ou transmissões ao vivo ordenados pelos mais recentes primeiro
-* 📅 Filtrar por data — escolha um único dia ou um intervalo de datas personalizado usando um calendário interativo
-* 🕐 Filtro de hora — restrinja os resultados a uma janela de tempo específica dentro da data selecionada (converte automaticamente seu fuso horário local para UTC)
+* 🔍 Busque vídeos ou transmissões ao vivo ordenados pelos mais recentes primeiro
+* 📅 Filtre por data — escolha um único dia ou um intervalo personalizado usando um calendário interativo
+* 🕐 Filtro de hora — restrinja os resultados a uma janela de tempo específica (converte automaticamente seu fuso horário local para UTC)
 * 🚫 Filtrar Shorts — oculta vídeos que contêm hashtags (`#`) no título ou descrição
-* ⏱️ Filtro de duração de vídeo — quando Videos está selecionado, filtre por Curto (<4 min), Médio (4–20 min) ou Longo (20+ min)
-* 🎨 8 temas de cores — Roxo, Ciano, Esmeralda, Rosa, Âmbar, Azul, Pink e Lima via painel de amostras
-* 💾 Chave de API e tema de cor salvos automaticamente no seu navegador
-* ✨ Fundo de partículas animadas, pré-carregado ao abrir
-* 🕒 Mostra há quanto tempo cada resultado foi publicado
+* ⏱️ Filtro de duração — no modo Vídeos, filtre por Curto (<4 min), Médio (4–20 min) ou Longo (20+ min)
+* 🎨 8 temas de cor — Roxo, Ciano, Esmeralda, Rosa, Âmbar, Azul, Pink e Lima
+* 💾 Chave API e tema de cor salvos automaticamente no seu navegador
+* ✨ Fundo de partículas animadas
+* 🕒 Mostra o tempo decorrido para cada resultado
 * 🖱️ Clique em qualquer resultado para abrir o vídeo diretamente
+* ⭐ Favorite qualquer vídeo com um toque — favoritos persistem entre sessões
+* 📋 Adicione notas a qualquer vídeo — toque no botão Notes em um cartão para expandir a área de texto, salvo automaticamente
+* 📄 Exporte sua sessão completa como arquivo `.md` — inclui todos os resultados de cada busca realizada, com URLs, links de miniaturas, favoritos e notas, sem cota adicional
 
-> **Nota:** O modo Transmissões ao vivo é desativado quando o filtro de data está ativo. O filtro de duração de vídeo só está disponível no modo Videos.
+> **Nota:** O modo Transmissões ao vivo é desativado quando o filtro de data está ativo. O filtro de duração só está disponível no modo Vídeos.
 
 ---
 
-## 🔑 Como Obter uma Chave de API do YouTube
+## 🔑 Como Obter uma Chave API do YouTube
 
-1. Abra uma nova aba, vá para o [Gmail](https://mail.google.com) e faça login na sua conta Google
+1. Abra uma nova aba, acesse o [Gmail](https://mail.google.com) e entre na sua conta Google
 2. Navegue até [console.cloud.google.com](https://console.cloud.google.com)
-3. Quando solicitado, aceite os **Termos de Serviço** e clique em **Concordo e continuo**
-4. No canto superior esquerdo da página, clique em **Selecionar um projeto**, depois no canto superior direito dessa janela clique em **Novo projeto**
-5. Dê um nome ao seu projeto e clique em **Criar** — aguarde a conclusão da criação
-6. Abra o **Menu de navegação** (as três barras no canto superior esquerdo), role para baixo até **APIs e serviços** e clique em **Biblioteca**
-7. Role para baixo até encontrar **YouTube Data API v3** e clique nela
+3. Aceite os **Termos de Serviço** e clique em **Concordo e continuo**
+4. No canto superior esquerdo, clique em **Selecionar projeto**, depois em **Novo projeto**
+5. Dê um nome ao projeto e clique em **Criar** — aguarde a conclusão
+6. Abra o **Menu de Navegação** (três barras no canto superior esquerdo), vá para **APIs e Serviços → Biblioteca**
+7. Role até encontrar **YouTube Data API v3** e clique nele
 8. Clique em **Ativar** e aguarde a ativação completa
 9. No lado esquerdo, clique em **Credenciais**
-10. No topo, clique em **Criar credenciais → Chave de API**, depois clique em **Criar**
-11. Após a geração da chave, clique na **Chave de API** para abrir suas configurações
-12. Em **Restrições de API**, clique em **Restringir chave**, depois clique em **Selecionar APIs**
-    - Se a YouTube Data API v3 não aparecer imediatamente, atualize a página
-    - Role para baixo, selecione **YouTube Data API v3** e clique em **OK**
+10. No topo, clique em **Criar Credenciais → Chave API → Criar**
+11. Após gerar a chave, clique na **Chave API** para abrir suas configurações
+12. Em **Restrições de API**, clique em **Restringir chave → Selecionar APIs**
+    - Se YouTube Data API v3 não aparecer imediatamente, atualize a página
+    - Selecione **YouTube Data API v3** e clique em **OK**
 13. Clique em **Salvar**
-14. Clique em **Mostrar chave**, depois copie sua chave
-15. Vá para o [YouTube Search Tool](https://slotchy.github.io/YouTube-Search-Tool), cole sua chave e faça uma pesquisa para confirmar que está funcionando
+14. Clique em **Mostrar chave**, depois copie-a
+15. Acesse a [Ferramenta de Busca YouTube](https://slotchy.github.io/YouTube-Search-Tool), cole sua chave e faça uma busca para confirmar que está funcionando
 
-> **Cota:** O nível gratuito fornece 10.000 unidades/dia. Cada pesquisa custa ~100 unidades (~100 pesquisas/dia gratuitamente).
+> **Cota:** O nível gratuito fornece 10.000 unidades/dia. Cada busca custa ~100 unidades (~100 buscas/dia gratuitamente).
 
 ---
 
-## 🚀 Como Usar
+## 🚀 Uso
 
-1. Cole sua chave de API do YouTube — salva automaticamente para visitas futuras
-2. Escolha **Videos** ou **Livestreams**
+1. Cole sua chave API do YouTube — salva automaticamente para visitas futuras
+2. Escolha **Vídeos** ou **Ao vivo**
 3. Digite seu tema de pesquisa
-4. *(Opcional)* Selecione uma **Duração de vídeo** para filtrar por duração (somente modo Videos)
-5. *(Opcional)* Marque **Filtrar Shorts** para excluir vídeos com hashtags no título ou descrição
-6. *(Opcional)* Ative **Filtrar por data** e selecione um dia ou intervalo de datas no calendário
-7. *(Opcional)* Se uma data estiver selecionada, defina uma hora de **Início** e **Fim** para filtrar por hora do dia
-8. Clique em **Encontrar mais recentes** (ou **Pesquisar** quando o filtro de data estiver ativo)
+4. *(Opcional)* Selecione uma **Duração de Vídeo** para filtrar (somente modo Vídeos)
+5. *(Opcional)* Marque **Filtrar Shorts** para excluir vídeos com hashtags
+6. *(Opcional)* Ative **Filtrar por Data** e selecione um dia ou intervalo no calendário
+7. *(Opcional)* Se uma data for selecionada, defina a hora de **Início** e **Fim**
+8. Clique em **Encontrar Mais Recentes** (ou **Buscar** com filtro de data ativo)
 9. Clique em qualquer cartão de resultado para abrir o vídeo
-10. Use as amostras de cor à direita para alterar o tema de destaque — lembrado entre visitas
+10. *(Opcional)* Clique em **☆ Favorite** em qualquer cartão para salvá-lo como favorito
+11. *(Opcional)* Clique em **📋 Notes** para expandir a área de notas e digitar uma nota
+12. Clique em **Export .MD** para baixar sua sessão completa como arquivo Markdown
+13. Use os swatches de cor à direita para mudar o tema — lembrado entre visitas
+
+---
+
+## 📄 Exportação
+
+O botão de exportação aparece automaticamente após a primeira busca e acumula resultados durante toda a sessão.
+
+O arquivo `.md` é organizado assim:
+
+* **⭐ Favoritos** — todos os vídeos marcados com estrela, listados primeiro
+* **📝 Notas** — todos os vídeos com notas anexadas
+* **Todos os Resultados** — cada resultado agrupado por termo de busca
+
+Favoritos e notas persistem no seu navegador entre atualizações de página via `localStorage`.
 
 ---
 
 ## 🔒 Privacidade
 
-* Chave de API armazenada localmente no seu navegador (`localStorage`) — nunca enviada a nenhum lugar exceto ao Google
-* Preferência de tema de cor armazenada localmente no seu navegador
-* Sem backend — todo o processamento ocorre no lado do cliente
-* As únicas solicitações externas são para a Google YouTube Data API v3
+* Chave API armazenada localmente no seu navegador (`localStorage`) — nunca enviada a nenhum lugar exceto o Google
+* Tema de cor, favoritos e notas armazenados localmente
+* Sem backend — todo o processamento acontece no lado do cliente
+* As únicas requisições externas são para a YouTube Data API v3 do Google
 
 ---
 
@@ -81,10 +101,11 @@ Uma ferramenta web para pesquisar vídeos e transmissões ao vivo do YouTube em 
 | Stack | HTML, CSS, JavaScript puro — sem frameworks |
 | Backend | Nenhum — totalmente no lado do cliente |
 | API | YouTube Data API v3 |
-| Resultados | Até 50, ordenados por data |
-| Filtro de data | Usa parâmetros `publishedAfter` / `publishedBefore` da API |
-| Filtro de duração | Usa parâmetro `videoDuration` da API (`short` / `medium` / `long`) |
-| Filtro de Shorts | No lado do cliente — remove qualquer resultado contendo `#` no título ou descrição |
-| Temas | Propriedades personalizadas CSS (`var(--accent)`) trocadas via JavaScript |
-| Partículas | Valores negativos de `animation-delay` para que partículas se preencham ao carregar |
-| Armazenamento | `localStorage` para chave de API e preferência de tema |
+| Resultados | Até 50 por busca, ordenados por data |
+| Filtro de data | Usa parâmetros `publishedAfter` / `publishedBefore` |
+| Filtro de duração | Usa o parâmetro `videoDuration` |
+| Filtro de Shorts | No lado do cliente — remove resultados com `#` no título ou descrição |
+| Temas | Propriedades CSS personalizadas trocadas via JavaScript |
+| Partículas | Valores negativos de `animation-delay` para pré-popular a tela ao carregar |
+| Armazenamento | `localStorage` para chave API, tema, favoritos e notas |
+| Exportação | Download Blob no lado do cliente — sem chamadas API adicionais |

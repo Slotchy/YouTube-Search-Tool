@@ -624,7 +624,6 @@
 
         .result-card:hover { border-color: #272733; transform: translateY(-2px); }
 
-        .result-title { color: #e5e5e5; font-size: 16px; margin-bottom: 10px; line-height: 1.4; }
         .result-time  { color: #a1a1aa; font-size: 14px; margin-bottom: 8px; }
 
         .result-link {
@@ -636,6 +635,87 @@
         }
 
         .result-link:hover { text-decoration: underline; }
+
+        /* ── Card header row (title + star) ── */
+        .result-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .result-title { color: #e5e5e5; font-size: 16px; line-height: 1.4; flex: 1; margin-bottom: 0; }
+
+        /* ── Star + Note buttons ── */
+        .card-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .star-btn, .note-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #13131c;
+            border: 1px solid #2a2a3a;
+            border-radius: 20px;
+            padding: 5px 12px;
+            cursor: pointer;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            color: #555;
+            transition: all 0.2s;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .star-btn:hover { border-color: #f59e0b; color: #f59e0b; background: #1e1a0e; }
+        .star-btn.starred { border-color: #f59e0b; color: #f59e0b; background: #1e1a0e; }
+
+        .note-btn:hover { border-color: var(--accent); color: var(--accent-tint); background: var(--accent-bg2); }
+        .note-btn.has-note { border-color: var(--accent); color: var(--accent-tint); background: var(--accent-bg2); }
+
+        .result-card.favorited       { border-color: #f59e0b44; }
+        .result-card.favorited:hover { border-color: #f59e0b88; }
+
+        /* ── Notes expand area ── */
+        .notes-area {
+            display: none;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid #2a2a3a;
+            animation: fadeSlideDown 0.18s ease;
+        }
+        .notes-area.open { display: block; }
+
+        .notes-area textarea {
+            width: 100%;
+            min-height: 72px;
+            background: #13131c;
+            border: 1px solid #3a3a4e;
+            border-radius: 4px;
+            color: #e5e5e5;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            padding: 10px 12px;
+            resize: vertical;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        .notes-area textarea:focus   { border-color: var(--accent); }
+        .notes-area textarea::placeholder { color: #444; }
+
+        .notes-area-label {
+            font-size: 11px;
+            color: #555;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
 
         .api-key-toggle {
             display: inline-block;
@@ -792,6 +872,159 @@
             transform: translateX(-50%) translateY(0);
         }
 
+        /* ══════════════════════════════════════════════════
+           EXPORT BUTTON — floating fixed
+        ══════════════════════════════════════════════════ */
+        #exportBtn {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 500;
+            display: none; /* hidden until results exist */
+
+            align-items: center;
+            gap: 9px;
+            padding: 13px 20px;
+            background: var(--accent-bg2);
+            border: 2px solid var(--accent);
+            border-radius: 50px;
+            color: var(--accent-tint);
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.6), 0 0 0 0 var(--accent);
+            transition: background 0.2s, color 0.2s, border-color 0.3s, box-shadow 0.2s, transform 0.15s;
+            white-space: nowrap;
+        }
+
+        #exportBtn.visible { display: flex; }
+
+        #exportBtn:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.7), 0 0 20px var(--accent-dim);
+        }
+
+        #exportBtn:active { transform: translateY(0); }
+
+        #exportBtn .export-icon { font-size: 18px; line-height: 1; }
+        #exportBtn .export-count {
+            background: var(--accent);
+            color: #fff;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        #exportBtn:hover .export-count { background: rgba(255,255,255,0.25); }
+
+        /* ── Export modal ── */
+        #exportModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 600;
+            background: rgba(0,0,0,0.75);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+            padding: 20px;
+        }
+
+        #exportModal.visible { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .export-modal-box {
+            background: #13131c;
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 28px 30px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            animation: slideUp 0.2s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        .export-modal-box h2 {
+            color: var(--accent-light);
+            font-size: 16px;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .export-modal-box p {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .export-filename-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .export-filename-row input[type="text"] {
+            flex: 1;
+            padding: 10px 14px;
+            font-size: 14px;
+        }
+
+        .export-filename-ext {
+            color: var(--accent-tint);
+            font-size: 14px;
+            white-space: nowrap;
+            padding: 10px 4px;
+        }
+
+        .export-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .export-cancel-btn {
+            padding: 10px 20px;
+            background: none;
+            border: 2px solid #3a3a4e;
+            border-radius: 6px;
+            color: #a1a1aa;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .export-cancel-btn:hover { border-color: var(--accent); color: #e5e5e5; }
+
+        .export-confirm-btn {
+            padding: 10px 22px;
+            background: var(--accent);
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.3s;
+        }
+
+        .export-confirm-btn:hover { background: var(--accent-light); border-color: var(--accent-light); }
+
         @media (max-width: 900px) {
             h1 { font-size: 1.8em; }
             .mode-buttons { flex-direction: column; }
@@ -799,6 +1032,7 @@
             .page-wrapper { flex-direction: column; gap: 12px; }
             .side-panel { flex-direction: row; flex-wrap: wrap; position: static; width: 100%; justify-content: center; }
             .side-panel .lang-btn::after { display: none; }
+            #exportBtn { bottom: 16px; right: 16px; padding: 11px 16px; font-size: 13px; }
         }
     </style>
 </head>
@@ -955,6 +1189,29 @@
 
     <!-- Toast notification -->
     <div id="langToast"></div>
+
+    <!-- ══ Floating Export Button ══ -->
+    <button id="exportBtn" onclick="openExportModal()" title="Export results as Markdown">
+        <span class="export-icon">⬇</span>
+        Export .MD
+        <span class="export-count" id="exportCount">0</span>
+    </button>
+
+    <!-- ══ Export Modal ══ -->
+    <div id="exportModal" onclick="handleModalBackdropClick(event)">
+        <div class="export-modal-box">
+            <h2>📄 Export as Markdown</h2>
+            <p id="exportModalDesc">Name your file — all results will be saved with titles, URLs, channels, dates, durations &amp; thumbnail links.</p>
+            <div class="export-filename-row">
+                <input type="text" id="exportFilename" placeholder="my-search-results" maxlength="80">
+                <span class="export-filename-ext">.md</span>
+            </div>
+            <div class="export-modal-actions">
+                <button class="export-cancel-btn" onclick="closeExportModal()">Cancel</button>
+                <button class="export-confirm-btn" onclick="confirmExport()">⬇ Download</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ══════════════════════════════════════════════════
@@ -1683,6 +1940,38 @@
         let rangePicking    = 'start';
         let currentDuration = 'any';
 
+        // Session results — accumulates ALL searches this session, grouped by query
+        // Each entry: { query, mode, duration, filterShorts, dateContext, items: [...] }
+        let sessionResults = [];
+
+        // ── Favorites & Notes (persisted to localStorage) ──
+        // favorites: Set of videoIds
+        // notes:     { videoId: string }
+        let favorites = new Set(JSON.parse(localStorage.getItem('yt_favorites') || '[]'));
+        let notes     = JSON.parse(localStorage.getItem('yt_notes') || '{}');
+
+        function saveFavorites() {
+            localStorage.setItem('yt_favorites', JSON.stringify([...favorites]));
+        }
+        function saveNotes() {
+            localStorage.setItem('yt_notes', JSON.stringify(notes));
+        }
+
+        function toggleFavorite(videoId, cardEl, starEl) {
+            if (favorites.has(videoId)) {
+                favorites.delete(videoId);
+                starEl.innerHTML = '☆ Favorite';
+                starEl.classList.remove('starred');
+                cardEl.classList.remove('favorited');
+            } else {
+                favorites.add(videoId);
+                starEl.innerHTML = '⭐ Favorite';
+                starEl.classList.add('starred');
+                cardEl.classList.add('favorited');
+            }
+            saveFavorites();
+        }
+
         const today = new Date();
         let calYear  = today.getFullYear();
         let calMonth = today.getMonth();
@@ -1994,6 +2283,168 @@
             } catch { return '?'; }
         }
 
+        // ══════════════════════════════════════════════════
+        //  EXPORT FEATURE
+        // ══════════════════════════════════════════════════
+
+        // Duration label maps for the three API buckets
+        const DURATION_LABELS = { short: 'Short (<4 min)', medium: 'Medium (4–20 min)', long: 'Long (20+ min)', any: 'Any' };
+
+        function updateExportBtn() {
+            const btn   = document.getElementById('exportBtn');
+            const badge = document.getElementById('exportCount');
+            const total = sessionResults.reduce((sum, g) => sum + g.items.length, 0);
+            badge.textContent = total;
+            if (total > 0) {
+                btn.classList.add('visible');
+            } else {
+                btn.classList.remove('visible');
+            }
+        }
+
+        function openExportModal() {
+            const dateStr = new Date().toISOString().slice(0, 10);
+            document.getElementById('exportFilename').value = `Search History Data_${dateStr}`;
+            document.getElementById('exportModal').classList.add('visible');
+            setTimeout(() => {
+                const inp = document.getElementById('exportFilename');
+                inp.focus();
+                inp.select();
+            }, 80);
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.remove('visible');
+        }
+
+        function handleModalBackdropClick(e) {
+            if (e.target === document.getElementById('exportModal')) closeExportModal();
+        }
+
+        function buildMarkdown() {
+            const now      = new Date();
+            const exportTs = now.toLocaleString();
+            const total    = sessionResults.reduce((sum, g) => sum + g.items.length, 0);
+
+            // Collect all items flat for favorites/notes lookup
+            const allItems = sessionResults.flatMap(g => g.items);
+
+            // ── Favorites section ──
+            const favItems = allItems.filter(item => favorites.has(item.id.videoId));
+
+            // ── Notes section (any video with a note, favorited or not) ──
+            const noteItems = allItems.filter(item => notes[item.id.videoId]);
+
+            let md = '';
+            md += `# YouTube Search Session Export\n\n`;
+            md += `> Exported on ${exportTs}\n\n`;
+            md += `---\n\n`;
+
+            // ── Session Summary ──
+            md += `## Session Summary\n\n`;
+            md += `| Field | Value |\n`;
+            md += `|-------|-------|\n`;
+            md += `| Total Searches | ${sessionResults.length} |\n`;
+            md += `| Total Results | ${total} |\n`;
+            md += `| Favorites | ${favItems.length} |\n`;
+            md += `| Videos with Notes | ${noteItems.length} |\n`;
+            md += `| Searches | ${sessionResults.map(g => g.query).join(', ')} |\n\n`;
+            md += `---\n\n`;
+
+            // ── ⭐ Favorites ──
+            if (favItems.length > 0) {
+                md += `## ⭐ Favorites (${favItems.length})\n\n`;
+                favItems.forEach((item, idx) => {
+                    md += renderItemMd(item, idx + 1, true);
+                });
+                md += `---\n\n`;
+            }
+
+            // ── 📝 Notes ──
+            if (noteItems.length > 0) {
+                md += `## 📝 Notes (${noteItems.length})\n\n`;
+                noteItems.forEach((item, idx) => {
+                    md += renderItemMd(item, idx + 1, false, true);
+                });
+                md += `---\n\n`;
+            }
+
+            // ── All Results by search ──
+            md += `## All Results\n\n`;
+            sessionResults.forEach((group, gi) => {
+                md += `### Search ${gi + 1}: "${group.query}"\n\n`;
+                md += `| Field | Value |\n`;
+                md += `|-------|-------|\n`;
+                md += `| Mode | ${group.mode} |\n`;
+                md += `| Duration Filter | ${group.duration} |\n`;
+                md += `| Filter Shorts | ${group.filterShorts ? 'Yes' : 'No'} |\n`;
+                md += `| Date Filter | ${group.dateContext} |\n`;
+                md += `| Results | ${group.items.length} |\n\n`;
+
+                group.items.forEach((item, idx) => {
+                    md += renderItemMd(item, idx + 1);
+                });
+
+                md += `\n`;
+            });
+
+            md += `---\n\n`;
+            md += `*Generated by [YouTube Search Tool](https://slotchy.github.io/YouTube-Search-Tool)*\n`;
+            return md;
+        }
+
+        function renderItemMd(item, num, showFavTag = false, showNote = false) {
+            const snippet     = item.snippet || {};
+            const videoId     = item.id.videoId;
+            const title       = snippet.title        || 'Untitled';
+            const channel     = snippet.channelTitle || 'Unknown Channel';
+            const publishedAt = snippet.publishedAt  || '';
+            const ago         = timeAgo(publishedAt);
+            const pubDate     = publishedAt ? new Date(publishedAt).toLocaleString() : 'Unknown';
+            const url         = `https://youtu.be/${videoId}`;
+            const thumb       = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            const isFav       = favorites.has(videoId);
+            const note        = notes[videoId] || '';
+
+            let md = '';
+            md += `#### ${num}. ${isFav ? '⭐ ' : ''}${title}\n\n`;
+            md += `[![Thumbnail](${thumb})](${url})\n\n`;
+            md += `| | |\n`;
+            md += `|-|-|\n`;
+            md += `| **Channel** | ${channel} |\n`;
+            md += `| **Published** | ${pubDate} |\n`;
+            md += `| **Time Ago** | ${ago} |\n`;
+            md += `| **URL** | [${url}](${url}) |\n`;
+            if (note) md += `| **Note** | ${note.replace(/\n/g, ' ')} |\n`;
+            md += `\n`;
+
+            return md;
+        }
+
+        function confirmExport() {
+            let filename = document.getElementById('exportFilename').value.trim();
+            if (!filename) filename = 'youtube-results';
+            // Sanitize
+            filename = filename.replace(/[\/\\:*?"<>|]/g, '-');
+            if (!filename.endsWith('.md')) filename += '.md';
+
+            const content = buildMarkdown();
+            const blob    = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+            const url     = URL.createObjectURL(blob);
+            const a       = document.createElement('a');
+            a.href        = url;
+            a.download    = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            closeExportModal();
+        }
+
+        // ══════════════════════════════════════════════════
+        //  SEARCH
+        // ══════════════════════════════════════════════════
         async function searchYouTube() {
             const apiKey = document.getElementById('apiKey').value.trim();
             const query  = document.getElementById('searchQuery').value.trim();
@@ -2017,6 +2468,8 @@
             btn.textContent = t('searching');
             setStatus(t('searching'), 'info');
             document.getElementById('results').innerHTML = '';
+
+            // Don't clear sessionResults — we accumulate across the whole session
 
             try {
                 let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&order=date&maxResults=50&key=${apiKey}`;
@@ -2081,35 +2534,117 @@
                     return;
                 }
 
+                // ── Accumulate results into session for export ──
+                let dateContext = 'Most recent (no date filter)';
+                if (dateEnabled) {
+                    if (dateMode === 'single' && selectedDate) {
+                        dateContext = `Single day: ${formatDate(selectedDate)}`;
+                    } else if (dateMode === 'range' && rangeStart && rangeEnd) {
+                        const s = rangeStart < rangeEnd ? rangeStart : rangeEnd;
+                        const e = rangeStart < rangeEnd ? rangeEnd   : rangeStart;
+                        dateContext = `Range: ${formatDate(s)} → ${formatDate(e)}`;
+                    }
+                }
+                sessionResults.push({
+                    query,
+                    mode:         currentMode === 'videos' ? 'Videos' : 'Livestreams',
+                    duration:     DURATION_LABELS[currentDuration],
+                    filterShorts: document.getElementById('filterShorts').checked,
+                    dateContext,
+                    items,
+                });
+                updateExportBtn();
+
                 const count = items.length;
                 setStatus(`${t('found')} ${count} ${count !== 1 ? t('results') : t('result')}${noShorts ? ' ' + t('shortsBlocked') : ''}`, 'success');
 
                 const container = document.getElementById('results');
                 items.forEach(item => {
                     if (!item.id.videoId) return;
+                    const videoId = item.id.videoId;
 
                     const card = document.createElement('div');
                     card.className = 'result-card';
+                    if (favorites.has(videoId)) card.classList.add('favorited');
+
+                    // ── Header row: title + actions (star + note) ──
+                    const header = document.createElement('div');
+                    header.className = 'result-card-header';
 
                     const title = document.createElement('div');
                     title.className   = 'result-title';
                     title.textContent = item.snippet.title;
 
+                    const actions = document.createElement('div');
+                    actions.className = 'card-actions';
+
+                    const star = document.createElement('button');
+                    star.className = 'star-btn' + (favorites.has(videoId) ? ' starred' : '');
+                    star.innerHTML = favorites.has(videoId) ? '⭐ Favorite' : '☆ Favorite';
+                    star.title = 'Favorite this video';
+                    star.onclick = e => { e.stopPropagation(); toggleFavorite(videoId, card, star); };
+
+                    const noteBtn = document.createElement('button');
+                    noteBtn.className = 'note-btn' + (notes[videoId] ? ' has-note' : '');
+                    noteBtn.innerHTML = '📋 Notes';
+                    noteBtn.title = 'Add a note';
+                    noteBtn.onclick = e => {
+                        e.stopPropagation();
+                        notesArea.classList.toggle('open');
+                        if (notesArea.classList.contains('open')) setTimeout(() => textarea.focus(), 50);
+                    };
+
+                    actions.appendChild(star);
+                    actions.appendChild(noteBtn);
+                    header.appendChild(title);
+                    header.appendChild(actions);
+
+                    // ── Time + link ──
                     const time = document.createElement('div');
                     time.className   = 'result-time';
                     time.textContent = timeAgo(item.snippet.publishedAt);
 
                     const link = document.createElement('a');
                     link.className   = 'result-link';
-                    link.href        = `https://youtu.be/${item.id.videoId}`;
-                    link.textContent = `https://youtu.be/${item.id.videoId}`;
+                    link.href        = `https://youtu.be/${videoId}`;
+                    link.textContent = `https://youtu.be/${videoId}`;
                     link.target      = '_blank';
                     link.onclick     = e => e.stopPropagation();
 
-                    card.appendChild(title);
+                    // ── Notes expand area ──
+                    const notesArea = document.createElement('div');
+                    notesArea.className = 'notes-area' + (notes[videoId] ? ' open' : '');
+
+                    const notesLabel = document.createElement('div');
+                    notesLabel.className   = 'notes-area-label';
+                    notesLabel.textContent = '📝 Notes';
+
+                    const textarea = document.createElement('textarea');
+                    textarea.placeholder = 'Add a note about this video…';
+                    textarea.value       = notes[videoId] || '';
+                    textarea.onclick     = e => e.stopPropagation();
+                    textarea.oninput     = e => {
+                        const val = e.target.value.trim();
+                        if (val) {
+                            notes[videoId] = val;
+                            noteBtn.classList.add('has-note');
+                        } else {
+                            delete notes[videoId];
+                            noteBtn.classList.remove('has-note');
+                        }
+                        saveNotes();
+                    };
+
+                    notesArea.appendChild(notesLabel);
+                    notesArea.appendChild(textarea);
+
+                    // ── Tap card body to open video; note button handles notes ──
+                    card.onclick = () => window.open(`https://youtu.be/${videoId}`, '_blank');
+
+                    card.appendChild(header);
                     card.appendChild(time);
                     card.appendChild(link);
-                    card.onclick = () => window.open(`https://youtu.be/${item.id.videoId}`, '_blank');
+                    card.appendChild(notesArea);
                     container.appendChild(card);
                 });
 
